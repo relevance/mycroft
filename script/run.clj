@@ -1,0 +1,2 @@
+(use 'zap.main)
+(-main)
