@@ -32,7 +32,14 @@
     }
 
 $(function () {
-    $.getJSON("/beans", null, function(e) {
-        fim("#list", e);
-    });
+//     $.getJSON("/beans", null, function(e) {
+//         fim("#list", e);
+//     });
+  // $("#content").load("/stuff", null, function() {
+  //   jQT.goTo("#top");
+  // });
+  $.get("/stuff", null, function(data) {
+    $("#content").replaceWith(data);
+    jQT.goTo("#top");
+  });
 });
