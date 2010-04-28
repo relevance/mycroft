@@ -17,7 +17,7 @@
 
 (extend-protocol IdComponent
   clojure.lang.Keyword
-  (as-id [this] (name this))
+  (as-id [this] (as-id (name this)))
 
   java.lang.Object
   (as-id [this] (-> (str this) (str/replace #"[^A-Za-z0-9]" "-"))))
@@ -33,6 +33,10 @@
    [:a {:href (str "#" (make-id path))} (last path)]
    :else item))
 
+(defn title
+  [path]
+  (str/join " " (drop (- (count path) 1) path)))
+
 (use 'clojure.contrib.pprint)
 (defn gui-seq
   ([expr]
@@ -42,6 +46,7 @@
       (associative? expr)
       (cons
        [:div {:id (make-id path)}
+        [:div {:class "toolbar"} [:h1 (title path)]]
         [:ul 
          (map
           (fn [[i e]] [:li (gui-item (conj path i) e)])
@@ -53,7 +58,7 @@
 
 (defn beandump []
   (into
-   {}
+   (sorted-map)
    (map
     #(let [n (.getCanonicalName %)]
        [n (jmx/mbean n)])

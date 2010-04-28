@@ -41,5 +41,7 @@ $(function () {
   $.get("/stuff", null, function(data) {
     $("#content").replaceWith(data);
     jQT.goTo("#top");
+    // $("body > div#top").prepend("<div class='toolbar'></div>");
+    $("body > div div.toolbar").prepend("<a href='#' class='back'>Back</a>");
   });
 });
