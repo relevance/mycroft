@@ -1,6 +1,10 @@
 (ns zap.main
-  (:use compojure clojure.contrib.json.write)
+  (:use [compojure.core :only (defroutes GET POST)]
+        [hiccup.core :only (html)]
+        [ring.adapter.jetty :only (run-jetty)]
+        clojure.contrib.json)
   (:require
+   [compojure.route :as route]
    [clojure.contrib.jmx :as jmx]
    [clojure.contrib.str-utils2 :as str]
    [clojure.contrib.repl-utils :as repl]))
@@ -12,7 +16,6 @@
   (indexed '(a b c d))  =>  ([0 a] [1 b] [2 c] [3 d])"
   [s]
   (map vector (iterate inc 0) s))
-
 
 (defn keyed
   [expr]
@@ -97,25 +100,17 @@
 
 (defroutes browser-routes
   (GET
-   "/"
-   (serve-file "mobile.html"))
-  (GET
    "/beans"
+   []
    {:body (json-str (map #(.getCanonicalName %) (jmx/mbean-names "*:*")))
     :headers {"Content-Type" "text/json"}})
   (GET
    "/stuff"
-   (html (gui-seq (beandump)))))
-
-(defroutes static-routes
-  (GET "/*" (or (serve-file (params :*)) :next))
-  (ANY "*" (page-not-found)))
-
-(defroutes app-routes
-  (routes browser-routes static-routes))
+   []
+   (html (gui-seq (beandump))))
+  (route/files "/")
+  (route/not-found "not found"))
 
 (defn -main []
-  (run-server
-   {:port 8080}
-   "/*"
-   (servlet app-routes)))
+  (run-jetty (var browser-routes)
+   {:port 8080 :join? false}))
