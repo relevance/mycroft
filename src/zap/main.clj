@@ -2,6 +2,7 @@
   (:use [compojure.core :only (defroutes GET POST)]
         [hiccup.core :only (html)]
         [ring.adapter.jetty :only (run-jetty)]
+        [ring.util.response :only (redirect)]
         clojure.contrib.json)
   (:require
    [compojure.route :as route]
@@ -99,15 +100,9 @@
     (jmx/mbean-names "*:*"))))
 
 (defroutes browser-routes
-  (GET
-   "/beans"
-   []
-   {:body (json-str (map #(.getCanonicalName %) (jmx/mbean-names "*:*")))
-    :headers {"Content-Type" "text/json"}})
-  (GET
-   "/stuff"
-   []
-   (html (gui-seq (beandump))))
+  (GET "/" [] (redirect "/mobile.html"))
+  (GET "/beans" [] {:body (json-str (map #(.getCanonicalName %) (jmx/mbean-names "*:*"))) :headers {"Content-Type" "text/json"}})
+  (GET "/stuff" [] (html (gui-seq (beandump))))
   (route/files "/")
   (route/not-found "not found"))
 
