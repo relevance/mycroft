@@ -3,8 +3,16 @@
   (:require
    [clojure.contrib.jmx :as jmx]
    [clojure.contrib.str-utils2 :as str]
-   [clojure.contrib.repl-utils :as repl]
-   [clojure.contrib.seq-utils :only (indexe)]))
+   [clojure.contrib.repl-utils :as repl]))
+
+(defn indexed
+  "Returns a lazy sequence of [index, item] pairs, where items come
+  from 's' and indexes count up from zero.
+
+  (indexed '(a b c d))  =>  ([0 a] [1 b] [2 c] [3 d])"
+  [s]
+  (map vector (iterate inc 0) s))
+
 
 (defn keyed
   [expr]
@@ -37,7 +45,33 @@
   [path]
   (str/join " " (drop (- (count path) 1) path)))
 
-(use 'clojure.contrib.pprint)
+(defn list-item
+  [path i elem]
+  (let [item (gui-item (conj path i) elem)]
+    (if (or (number? i)
+            (associative? elem))
+      [:li item]
+      [:li [:span i] "&nbsp;&nbsp;&nbsp;"[:span item]])))
+
+(defn gui-list
+  [path expr]
+  [:ul 
+   (map
+    (fn [[i e]] (list-item path i e))
+    (keyed expr))])
+
+; html tables seem to screw up jqtouch
+(defn gui-table
+  [path expr]
+  [:ul 
+   (map
+    (fn [[i e]] (list-item path i e))
+    (keyed expr))]
+  #_[:table
+   (map
+    (fn [[i e]] [:tr [:td i] [:td (gui-item (conj path i) e)]])
+    (keyed expr))])
+
 (defn gui-seq
   ([expr]
      (gui-seq ["top"] expr))
@@ -47,10 +81,7 @@
       (cons
        [:div {:id (make-id path)}
         [:div {:class "toolbar"} [:h1 (title path)]]
-        [:ul 
-         (map
-          (fn [[i e]] [:li (gui-item (conj path i) e)])
-          (keyed expr))]]
+        (gui-table path expr)]
        (->> (keyed expr)
             (filter (fn [[_ e]] (associative? e)))
             (mapcat (fn [[i e]] (gui-seq (conj path i) e)))))
