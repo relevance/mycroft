@@ -1,9 +1,10 @@
 (ns zap.main
-  (:use [compojure.core :only (defroutes GET POST)]
-        [hiccup.core :only (html)]
+  (:use [clojure.contrib.json :only [json-str]]
         [ring.adapter.jetty :only (run-jetty)]
         [ring.util.response :only (redirect)]
-        clojure.contrib.json)
+        [compojure.core :only (defroutes GET POST)]
+        [hiccup.core :only (html)]
+        [zap.html :only [layout]])
   (:require
    [compojure.route :as route]
    [clojure.contrib.jmx :as jmx]
@@ -59,22 +60,22 @@
 
 (defn gui-list
   [path expr]
-  [:ul 
+  [:ul
    (map
     (fn [[i e]] (list-item path i e))
     (keyed expr))])
 
-; html tables seem to screw up jqtouch
+                                        ; html tables seem to screw up jqtouch
 (defn gui-table
   [path expr]
-  [:ul 
+  [:ul
    (map
     (fn [[i e]] (list-item path i e))
     (keyed expr))]
   #_[:table
-   (map
-    (fn [[i e]] [:tr [:td i] [:td (gui-item (conj path i) e)]])
-    (keyed expr))])
+     (map
+      (fn [[i e]] [:tr [:td i] [:td (gui-item (conj path i) e)]])
+      (keyed expr))])
 
 (defn gui-seq
   ([expr]
@@ -100,12 +101,12 @@
     (jmx/mbean-names "*:*"))))
 
 (defroutes browser-routes
-  (GET "/" [] (redirect "/mobile.html"))
+  (GET "/" [] (layout))
   (GET "/beans" [] {:body (json-str (map #(.getCanonicalName %) (jmx/mbean-names "*:*"))) :headers {"Content-Type" "text/json"}})
   (GET "/stuff" [] (html (gui-seq (beandump))))
   (route/files "/")
   (route/not-found "not found"))
 
 (defn -main []
-  (run-jetty (var browser-routes)
-   {:port 8080 :join? false}))
+  (run-jetty (var browser-routes) {:port 8080
+                                   :join? false}))
