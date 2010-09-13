@@ -17,3 +17,23 @@
      [:ul
       [:li "loading..."]]]
     [:div {:id "content"}]]))
+
+(defn minib-layout [& body]
+  (html
+    [:head
+     [:title "Mini-Browser"]
+     (include-css "/stylesheets/shCore.css"
+                  "/stylesheets/shThemeDefault.css"
+                  "/stylesheets/application.css")
+     (include-js "/javascripts/jquery.3.2.min.js"
+                 "/javascripts/application.js"
+                 "/javascripts/shCore.js"
+                 "/javascripts/shBrushClojure.js")]
+    [:body {:id "browser"}
+     [:div {:id "header"}
+      [:h2 "Mini-Browser"]]
+     [:div {:id "content"}
+      body]
+     [:div {:id "footer"}
+      "Clojure Mini-Browser"]]))
+

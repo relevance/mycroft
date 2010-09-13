@@ -1,0 +1,122 @@
+/* Eric Meyer's Resetting Again */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* Default Styles */
+
+body {
+  border-top:4px solid #B3CCFE;
+  margin: 0;
+  padding: 0;
+	font-family: arial, sans-serif;
+	font-size: 13px;
+	color: #231f14;
+	line-height: 1.6em;
+}
+
+h2, h3, h4, h5, h6 { color: #3D5A96; }
+h2 { font-size: 28px; margin-bottom: 0.4em; letter-spacing: -1px; line-height: 32px; }
+h3 { font-size: 20px; margin: 0.8em 0;	}
+h4 { font-size: 16px; margin: 0.5em 0; }
+
+a { color: #3D5A96; }
+a:visited { color: #5881D8;}
+a:hover { color: #90B4FE; }
+
+p { margin: 0.33em 0pt 1em; }
+
+pre {
+  border: 1px solid gray;
+  background-color: #F8F8F8;
+  padding: .6em;
+  margin: .6em;
+}
+
+strong {
+	font-weight: bold;
+}
+
+em {
+	font-style: italic;
+}
+
+code.inline-syntax { color: #4C5770; font-family: "Consolas","Bitstream Vera Sans Mono","Courier New",Courier,monospace; font-weight: 700; font-size: 14px; padding: 0 2px;}
+
+ol li { list-style-type: decimal; margin-left: 20px; }
+
+#header, #footer, #content {
+  width: 740px;
+  padding: 0 10px;
+  margin: 0 auto;
+}
+#browser #header, #browser #footer, #browser #content {
+  width: 940px;
+}
+
+/* Header styles */
+#header { padding: 10px 0 0; }
+h2.logo { padding-left: 100px; height: 82px; background: url(clojure_logo.jpg) top left no-repeat; line-height: 82px;}
+
+/* Content styles */
+#content { padding: 0 0 10px; }
+
+div.browse-list { height: 200px; overflow: scroll; overflow-x: auto; width: 50%; display:inline-block; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; }
+div.browse-list ul li:nth-child(odd) { background-color: #EDF3FE; }
+div.browse-list ul li a { padding: 2px 5px; display: block; }
+div.browse-list ul li a:hover { background-color: #eee; color: #3881D8;}
+
+a.top-link { margin: 10px 0; display: block; }
+
+/* Syntax Highlighter Styles */
+div.syntaxhighlighter { border: 1px solid #ddd !important; padding: 0.6em !important; margin: 0.6em !important; font-size: 14px !important; }
+#browser div.syntaxhighlighter { width: auto !important; }
+div.syntaxhighlighter.nogutter div.line { background-color: #F8F8F8 !important; }
+
+/* Footer styles */
+#footer { padding: 10px 0; color: #a09b97; border-top: solid 1px #ddd; }
+#footer a { color: #6f6c69; }
+#footer a:hover { color: #514e4c; }

@@ -4,12 +4,13 @@
         [ring.util.response :only (redirect)]
         [compojure.core :only (defroutes GET POST)]
         [hiccup.core :only (html)]
-        [zap.html :only [layout]])
+        [zap.html :only [layout minib-layout]]
+        clojure.pprint)
   (:require
+   clojure.repl
    [compojure.route :as route]
-   [clojure.contrib.jmx :as jmx]
-   [clojure.contrib.str-utils2 :as str]
-   [clojure.contrib.repl-utils :as repl]))
+   [zap.jmx :as jmx]
+   [clojure.string :as str]))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -92,18 +93,109 @@
             (mapcat (fn [[i e]] (gui-seq (conj path i) e)))))
       :else expr)))
 
-(defn beandump []
-  (into
-   (sorted-map)
-   (map
-    #(let [n (.getCanonicalName %)]
-       [n (jmx/mbean n)])
-    (jmx/mbean-names "*:*"))))
+(defn namespace-names
+  "Sorted list of namespace names (strings)."
+  []
+  (->> (all-ns)
+       (map #(.name %))
+       (sort)))
+
+(defn var-names
+  "Sorted list of var names in a namespace (symbols)."
+  [ns]
+  (when-let [ns (find-ns (symbol ns))]
+    (sort (keys (ns-publics ns)))))
+
+(defn namespace-link
+  [ns-name]
+  [:a {:href (str "/browse/" ns-name)} ns-name])
+
+(defn namespace-browser
+  [ns-names]
+  [:div
+   {:class "browse-list"}
+   [:ul
+    (map
+     (fn [ns] [:li (namespace-link ns)])
+     ns-names)]])
+
+(defn var-link
+  [ns-name var-name]
+  [:a {:href (str "/browse/" ns-name "/" (java.net.URLEncoder/encode (str var-name)))} var-name])
+
+(defn var-browser
+  [ns vars]
+  (html
+   [:div
+    {:class "browse-list variables"}
+    [:ul
+     (map
+      (fn [var] [:li (var-link ns var)])
+      vars)]]))
+
+(defn view-function
+  [func]
+  (html
+   [:h3 (find-var (symbol func))]))
+
+(defn var-symbol
+  "Create a var-symbol, given the ns and var names as strings."
+  [ns var]
+  (symbol (str ns "/" var)))
+
+(defn format-code
+  [& codes]
+  (apply str (map
+              (fn [code]
+                (if (string? code)
+                  (str code "\n")
+                  (with-out-str (pprint code))))
+              codes)))
+
+(defn one-liner?
+  [s]
+  (if s
+    (< (count (remove empty? (str/split s #"\s*\n\s*"))) 2)
+    true))
+
+(defn code*
+  "Show codes (literal strings or forms) in a pre/code block."
+  [& codes]
+  (let [code-string (apply format-code codes)
+        class-string "brush: clojure; toolbar: false;"
+        class-string (if (one-liner? code-string) (str class-string  " light: true;") class-string)]
+    [:script {:type "syntaxhighlighter" :class class-string}
+     (str "<![CDATA[" code-string "]]>")]))
+
+(defn var-detail
+  [ns var]
+  (when var
+    (let [sym (var-symbol ns var)
+          var (find-var sym)]
+      (html [:h3 sym]
+            [:h4 "Docstring"]
+            [:pre [:code
+                   (with-out-str (print-doc var))]]
+            [:h4 "Source"]
+            (code* (clojure.repl/source-fn sym))))))
 
 (defroutes browser-routes
   (GET "/" [] (layout))
-  (GET "/beans" [] {:body (json-str (map #(.getCanonicalName %) (jmx/mbean-names "*:*"))) :headers {"Content-Type" "text/json"}})
-  (GET "/stuff" [] (html (gui-seq (beandump))))
+  (GET "/stuff" [] (html (gui-seq (jmx/beans "*:*"))))
+  (GET "/browse" []
+       (html
+        (minib-layout
+         (namespace-browser (namespace-names))
+         [:div {:class "browse-list empty"}])))
+  (GET
+   "/browse/*"
+   request
+   (let [[ns var] (str/split (get-in request [:params "*"]) #"/")]
+     (html
+      (minib-layout
+       (if var
+         (var-detail ns var)
+         (var-browser ns (var-names ns)))))))
   (route/files "/")
   (route/not-found "not found"))
 
