@@ -18,20 +18,20 @@
       [:li "loading..."]]]
     [:div {:id "content"}]]))
 
-(defn minib-layout [& body]
+(defn minib-layout [title & body]
   (html
     [:head
-     [:title "Mini-Browser"]
+     [:title title]
      (include-css "/stylesheets/shCore.css"
                   "/stylesheets/shThemeDefault.css"
                   "/stylesheets/application.css")
-     (include-js "/javascripts/jquery.3.2.min.js"
+     (include-js "/jqtouch/jquery.1.3.2.min.js"
                  "/javascripts/application.js"
                  "/javascripts/shCore.js"
                  "/javascripts/shBrushClojure.js")]
     [:body {:id "browser"}
      [:div {:id "header"}
-      [:h2 "Mini-Browser"]]
+      [:h2 title]]
      [:div {:id "content"}
       body]
      [:div {:id "footer"}

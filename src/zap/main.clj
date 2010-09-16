@@ -172,8 +172,7 @@
   (when var
     (let [sym (var-symbol ns var)
           var (find-var sym)]
-      (html [:h3 sym]
-            [:h4 "Docstring"]
+      (html [:h4 "Docstring"]
             [:pre [:code
                    (with-out-str (print-doc var))]]
             [:h4 "Source"]
@@ -185,14 +184,15 @@
   (GET "/browse" []
        (html
         (minib-layout
-         (namespace-browser (namespace-names))
-         [:div {:class "browse-list empty"}])))
+         "Namespaces"
+         (namespace-browser (namespace-names)))))
   (GET
    "/browse/*"
    request
    (let [[ns var] (str/split (get-in request [:params "*"]) #"/")]
      (html
       (minib-layout
+       (if var (str "Var: " var) (str "Namespace: " ns))
        (if var
          (var-detail ns var)
          (var-browser ns (var-names ns)))))))
