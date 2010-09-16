@@ -15,6 +15,10 @@
   (render [this options]))
 
 (extend-protocol Helper
+  clojure.lang.IRef
+  (keyed [this] (keyed @this))
+  (render [this options] (render @this options))
+  
   clojure.lang.Sequential
   (keyed [this] (indexed this))
   (render [this options] (render-table this options))

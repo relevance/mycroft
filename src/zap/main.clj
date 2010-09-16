@@ -2,7 +2,7 @@
   (:use [clojure.contrib.json :only [json-str]]
         [ring.adapter.jetty :only (run-jetty)]
         [ring.util.response :only (redirect)]
-        [compojure.core :only (defroutes GET POST)]
+        [compojure.core :only (defroutes GET POST routes)]
         [hiccup.core :only (html)]
         [zap.html :only [layout minib-layout]]
         clojure.pprint)
@@ -181,7 +181,18 @@
               (code* (clojure.repl/source-fn sym)))
         (html (data/render @var nil))))))
 
-(defroutes browser-routes
+(defn with-logging [handler]
+  (fn [request]
+    (let [start (System/nanoTime)
+          response (handler request)
+          elapsed (/ (double (- (System/nanoTime) start)) 1000000.0)]
+      (when response
+        (println (str (:uri request) " [" (:request-method request) "] " elapsed " msec"
+                      "\n\tParameters " (:params request)
+                      "\n\tSession " (:session request)))
+        response))))
+
+(defroutes dynamic-routes
   (GET "/jmx" [] (layout))
   (GET "/stuff" [] (html (gui-seq (jmx/beans "*:*"))))
   (GET "/vars" []
@@ -198,10 +209,16 @@
        (if var (str "Var: " var) (str "Namespace: " ns))
        (if var
          (var-detail ns var)
-         (var-browser ns (var-names ns)))))))
+         (var-browser ns (var-names ns))))))))
+
+(defroutes static-routes
   (route/files "/")
   (route/not-found "not found"))
 
+(defroutes app
+  (routes (-> dynamic-routes with-logging)
+          static-routes))
+
 (defn -main []
-  (run-jetty (var browser-routes) {:port 8080
-                                   :join? false}))
+  (run-jetty (var app) {:port 8080
+                        :join? false}))
