@@ -2,13 +2,16 @@
 
 (def history (atom (list)))
 
-(defn update-history
+(defn append-to-history
   [request]
   (swap! history #(->> % (cons request) (take 5))))
 
 (defn with-recent-history [handler]
   (fn [request]
-    (-> request update-history handler)))
+    (let [response (handler request)]
+      (when response
+        (append-to-history request)
+        response))))
 
 
 

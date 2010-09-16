@@ -13,6 +13,7 @@
    [zap.jqtouch :as jqtouch]
    [zap.namespace :as namespace]
    [zap.docs :as docs]
+   [zap.history :as history]
    [clojure.string :as str]))
 
 (defn var-detail
@@ -35,14 +36,18 @@
                       "\n\tSession " (:session request)))
         response))))
 
-(defroutes dynamic-routes
+(defroutes jmx-routes
   (GET "/jmx" [] (jqtouch/layout))
-  (GET "/stuff" [] (html (jqtouch/gui-seq (jmx/beans "*:*"))))
+  (GET "/stuff" [] (html (jqtouch/gui-seq (jmx/beans "*:*")))))
+
+(defroutes namespace-routes
   (GET "/vars" []
        (html
         (minib-layout
          "Namespaces"
-         (namespace/browser))))
+         (namespace/browser)))))
+
+(defroutes var-routes
   (GET
    "/vars/*"
    {:keys [params query-params]}
@@ -54,6 +59,10 @@
        (if var
          (var-detail ns var query-params)
          (namespace/var-browser ns)))))))
+
+(def dynamic-routes (routes jmx-routes
+                            (-> namespace-routes history/with-recent-history)
+                            var-routes))
 
 (defroutes static-routes
   (route/files "/")

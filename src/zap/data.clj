@@ -20,10 +20,6 @@
   (keyed [_] nil)
   (render-type [this options] (render-type "<nil>" options))
   
-  clojure.lang.IRef
-  (keyed [this] (keyed @this))
-  (render-type [this options] (render-type @this options))
-  
   clojure.lang.Sequential
   (keyed [this] (indexed this))
   (render-type [this options] (render-table this options))
@@ -40,14 +36,26 @@
   (keyed [this] this)
   (render-type [this options] (render-string this options)))
 
-(use 'clojure.pprint)
+
+(defn select
+  "Like get-in, but uses nth to follow (in O(n) time!)
+   lazy sequences."
+  [item selectors]
+  (reduce
+   (fn [item sel]
+     (if (integer? sel)
+       (nth item sel)
+       (get item sel)))
+   item
+   selectors))
+
 (defn paginate
   [item {:keys [selector start count meta] :as options}]
-  (pprint {:item item})
   (let [item (if (var? item)
                (if meta (meta item) @item)
                item)
-        item (if selector (get-in item selector) item)
+        item (if (instance? clojure.lang.IRef item) @item item)
+        item (if selector (select item selector) item)
         item (keyed item)
         item (if start (drop start item) item)
         item (if count (take count item) item)]
