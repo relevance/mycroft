@@ -120,3 +120,9 @@ div.syntaxhighlighter.nogutter div.line { background-color: #F8F8F8 !important; 
 #footer { padding: 10px 0; color: #a09b97; border-top: solid 1px #ddd; }
 #footer a { color: #6f6c69; }
 #footer a:hover { color: #514e4c; }
+
+
+table.data               {font-family: Lucida Grande, Arial; font-size: 8pt; border-collapse: collapse;}
+table.data tr td         {vertical-align: top; padding-left: 3px; padding-top: 3px;}
+table.data td            {border: solid 1px gray; padding: 5px;}
+table.data tr:nth-child(2n)        {background-color: #DDDDDD; }
