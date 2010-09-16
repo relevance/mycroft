@@ -10,6 +10,7 @@
    clojure.repl
    [compojure.route :as route]
    [zap.jmx :as jmx]
+   [zap.data :as data]
    [clojure.string :as str]))
 
 (defn indexed
@@ -172,11 +173,13 @@
   (when var
     (let [sym (var-symbol ns var)
           var (find-var sym)]
-      (html [:h4 "Docstring"]
-            [:pre [:code
-                   (with-out-str (print-doc var))]]
-            [:h4 "Source"]
-            (code* (clojure.repl/source-fn sym))))))
+      (if (fn? @var)
+        (html [:h4 "Docstring"]
+              [:pre [:code
+                     (with-out-str (print-doc var))]]
+              [:h4 "Source"]
+              (code* (clojure.repl/source-fn sym)))
+        (html (data/render @var nil))))))
 
 (defroutes browser-routes
   (GET "/" [] (layout))
