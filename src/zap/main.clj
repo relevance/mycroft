@@ -109,7 +109,7 @@
 
 (defn namespace-link
   [ns-name]
-  [:a {:href (str "/browse/" ns-name)} ns-name])
+  [:a {:href (str "/vars/" ns-name)} ns-name])
 
 (defn namespace-browser
   [ns-names]
@@ -122,7 +122,7 @@
 
 (defn var-link
   [ns-name var-name]
-  [:a {:href (str "/browse/" ns-name "/" (java.net.URLEncoder/encode (str var-name)))} var-name])
+  [:a {:href (str "/vars/" ns-name "/" (java.net.URLEncoder/encode (str var-name)))} var-name])
 
 (defn var-browser
   [ns vars]
@@ -182,15 +182,15 @@
         (html (data/render @var nil))))))
 
 (defroutes browser-routes
-  (GET "/" [] (layout))
+  (GET "/jmx" [] (layout))
   (GET "/stuff" [] (html (gui-seq (jmx/beans "*:*"))))
-  (GET "/browse" []
+  (GET "/vars" []
        (html
         (minib-layout
          "Namespaces"
          (namespace-browser (namespace-names)))))
   (GET
-   "/browse/*"
+   "/vars/*"
    request
    (let [[ns var] (str/split (get-in request [:params "*"]) #"/")]
      (html
