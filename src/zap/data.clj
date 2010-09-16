@@ -11,31 +11,21 @@
 
 (declare render-table render-string)
 
-(defprotocol Helper
-  (keyed [this])
-  (render-type [this options]))
+(defmulti keyed class)
+(defmethod keyed java.util.Set [obj] (map vector obj))
+(defmethod keyed clojure.lang.Sequential [obj] (indexed obj))
+(defmethod keyed :default [obj] obj)
 
-(extend-protocol Helper
-  nil
-  (keyed [_] nil)
-  (render-type [this options] (render-type "<nil>" options))
-  
-  clojure.lang.Sequential
-  (keyed [this] (indexed this))
-  (render-type [this options] (render-table this options))
-  
-  java.util.Map
-  (keyed [this] this)
-  (render-type [this options] (render-table this options))
-  
-  java.util.Set
-  (keyed [this] (map vector this))
-  (render-type [this options] (render-table this options))
-
-  java.lang.Object
-  (keyed [this] this)
-  (render-type [this options] (render-string this options)))
-
+(defmulti render-type (fn [type options] (class type)))
+(defmethod render-type nil [this options]
+  (render-type "<nil> !!" options))
+(defmethod render-type java.util.Collection [this options]
+  (render-table this options))
+(defmethod render-type clojure.lang.IPersistentCollection [this options]
+  (render-table this options))
+(defmethod render-type :default [this options]
+  (render-string this options))
+(prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
 (defn select
   "Like get-in, but uses nth to follow (in O(n) time!)
