@@ -18,10 +18,23 @@
 (defmethod keyed clojure.lang.Sequential [obj] (indexed obj))
 (defmethod keyed :default [obj] obj)
 
-(defmulti render-type (fn [type options] (class type)))
+(defn tag
+  [t]
+  (println "t is " t)
+  (cond
+   (nil? t) nil
+   (-> t .getClass .isArray) :Array
+   :else (class t)))
+
+(defmulti render-type (fn [type options] (tag type)))
 (defmethod render-type nil [this options]
-  (render-type "<nil> !!" options))
+  (render-type "&lt;nil&gt;" options))
+(defmethod render-type :Array [this options]
+  (pprint {:this this :options options})
+  (render-type (seq this) options))
 (defmethod render-type java.util.Collection [this options]
+  (render-collection this options))
+(defmethod render-type clojure.lang.ISeq [this options]
   (render-collection this options))
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
   (render-collection this options))
@@ -100,6 +113,7 @@
 (defn composite?
   [x]
   (or (seq? x)
+      (-> x .getClass .isArray)
       (instance? clojure.lang.Seqable x)
       (instance? Iterable x)
       (instance? java.util.Map x)))
@@ -113,7 +127,6 @@
 
 (defn render-collection
   [content {:keys [selector start count] :as options}]
-  (pprint {:content content :selector selector})
   (let [content (if selector (select content selector) content)
         content (keyed content)
         content (if start (drop start content) content)
