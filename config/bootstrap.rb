@@ -9,6 +9,7 @@ Capistrano::Configuration.instance.load do
       sudo "apt-get update -qq"
       sudo "apt-get install -y openjdk-6-jdk; sudo dpkg --configure -a"
       create_app_user
+      reverse_proxy
     end
 
     task :create_app_user do
@@ -23,9 +24,10 @@ Capistrano::Configuration.instance.load do
     end
     
     task :reverse_proxy do
-      sudo "apt-get install nginx"
-      upload "config/reverse_proxy_config.nginx", "/etc/nginx/sites-enabled/default"
-      sudo "/etc/init.d/nginx restart"
+      sudo 'apt-get install nginx'
+      upload "config/mime.types", "/etc/nginx/mime.types"
+      upload "config/reverse_proxy_config.nginx", "/etc/nginx/nginx.conf"
+      sudo '/etc/init.d/nginx restart'
     end
   end
 end
