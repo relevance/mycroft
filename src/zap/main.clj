@@ -3,7 +3,7 @@
         [ring.util.response :only (redirect)]
         [compojure.core :only (defroutes GET POST routes)]
         [hiccup.core :only (html)]
-        [zap.html :only [minib-layout]]
+        [hiccup.page-helpers :only [include-js include-css]]
         [clojure.pprint :only (pprint)]
         [clojure.walk :only (keywordize-keys)])
   (:require
@@ -16,14 +16,24 @@
    [zap.history :as history]
    [clojure.string :as str]))
 
-(defn var-detail
-  [ns var params]
-  (when var
-    (let [sym (namespace/var-symbol ns var)
-          var (find-var sym)]
-      (if (fn? @var)
-        (html (docs/render var sym))
-        (html (data/render var (keywordize-keys params)))))))
+(defn minib-layout [title & body]
+  (html
+    [:head
+     [:title title]
+     (include-css "/stylesheets/shCore.css"
+                  "/stylesheets/shThemeDefault.css"
+                  "/stylesheets/application.css")
+     (include-js "/jqtouch/jquery.1.3.2.min.js"
+                 "/javascripts/application.js"
+                 "/javascripts/shCore.js"
+                 "/javascripts/shBrushClojure.js")]
+    [:body {:id "browser"}
+     [:div {:id "header"}
+      [:h2 title]]
+     [:div {:id "content"}
+      body]
+     [:div {:id "footer"}
+      "Clojure Mini-Browser"]]))
 
 (defn with-logging [handler]
   (fn [request]
@@ -53,11 +63,12 @@
    {:keys [params query-params]}
    (let [qname (get params "*")
          [ns var] (str/split qname #"/")]
+     (namespace/safe-load-ns ns)
      (html
       (minib-layout
        (if var (str "Var: " qname) (str "Namespace: " ns))
        (if var
-         (var-detail ns var query-params)
+         (data/render (find-var (symbol qname)) (keywordize-keys query-params))
          (namespace/var-browser ns)))))))
 
 (def dynamic-routes (routes jmx-routes

@@ -1,5 +1,6 @@
 (ns zap.data
-  (:use [hiccup.page-helpers :only (encode-params)]))
+  (:use [hiccup.page-helpers :only (encode-params)])
+  (:require [zap.docs :as docs]))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -23,16 +24,22 @@
   (render-table this options))
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
   (render-table this options))
+(defmethod render-type clojure.lang.Fn [this options]
+  (docs/render this options))
 (defmethod render-type :default [this options]
   (render-string this options))
+
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
+(use 'clojure.pprint)
 (defn select
   "Like get-in, but uses nth to follow (in O(n) time!)
    lazy sequences."
   [item selectors]
   (reduce
    (fn [item sel]
+     (pprint {:item item
+              :sel sel})
      (if (integer? sel)
        (nth item sel)
        (get item sel)))
@@ -40,6 +47,13 @@
    selectors))
 
 (defn paginate
+  "Given a var and some options, find the part of a var
+   to show on this page. Options:
+
+   :selector : vector is passed to select to drill in
+   :meta     : true to look at metadata instead of data
+   :start    : start at the nth item
+   :count    : how many items to show"
   [item {:keys [selector start count meta] :as options}]
   (let [item (if (var? item)
                (if meta (meta item) @item)
@@ -52,6 +66,8 @@
     item))
 
 (defn normalize-options
+  "Convert options from string form (as coming in from web)
+   to data structures as needed."
   [options]
   (if (:selector options)
     (update-in options [:selector] read-string)

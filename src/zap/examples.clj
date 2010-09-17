@@ -1,4 +1,5 @@
-(ns zap.examples)
+(ns zap.examples
+  (:require [zap.jmx :as jmx]))
 
 (let [abc [:A :B :C :D :E]]
   (def an-atom (atom abc))
@@ -15,3 +16,6 @@
    :the-set :a-set
    :the-map :a-map
    :the-ref :a-ref})
+
+(def jmx-beans
+  (jmx/beans "*:*"))

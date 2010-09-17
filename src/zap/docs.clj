@@ -3,7 +3,7 @@
   (:require [clojure.string :as str]
             clojure.repl))
 
-(defn format-code
+(defn- format-code
   [& codes]
   (apply str (map
               (fn [code]
@@ -12,13 +12,13 @@
                   (with-out-str (pprint code))))
               codes)))
 
-(defn one-liner?
+(defn- one-liner?
   [s]
   (if s
     (< (count (remove empty? (str/split s #"\s*\n\s*"))) 2)
     true))
 
-(defn code*
+(defn- code*
   "Show codes (literal strings or forms) in a pre/code block."
   [& codes]
   (let [code-string (apply format-code codes)
@@ -27,14 +27,17 @@
     [:script {:type "syntaxhighlighter" :class class-string}
      (str "<![CDATA[" code-string "]]>")]))
 
+(defn- var-symbol
+  [v]
+  (symbol (str (.ns v) "/" (.sym v))))
+
 (defn render
   "Render docstring and source for a var"
-  [var sym]
-  (println var sym)
+  [var options]
   [:div
    [:h4 "Docstring"]
    [:pre [:code
           (with-out-str (print-doc var))]]
    [:h4 "Source"]
-   (code* (clojure.repl/source-fn sym))])
+   (code* (clojure.repl/source-fn (var-symbol var)))])
 
