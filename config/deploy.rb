@@ -1,10 +1,10 @@
 $LOAD_PATH << "config"
 
-set :application, "rich-services"
+set :application, "zap"
 set :scm, :git
 set(:current_branch)     { `git branch`.match(/\* (\S+)\s/m)[1] || raise("Couldn't determine current branch") }
 set :branch,             defer { current_branch }
-set :repository, "git@github.com:relevance/rich-services.git"
+set :repository, "git@github.com:relevance/zap.git"
 set :deploy_to, "/var/www/apps/#{application}"
 
 set :deploy_via, :copy
@@ -14,7 +14,7 @@ set :use_sudo, !!ENV["SUDO"]
 
 set :domain, ENV['SERVER'] || abort("Error - You must specify a server to deploy to as an environment variable - for example: 'SERVER=web01.example.com cap deploy'")
 
-set :non_privileged_user, "richservices"
+set :non_privileged_user, application
 set :user, ENV["CAP_USER"] || non_privileged_user
 ssh_options[:auth_methods] = ["publickey"]
 default_run_options[:pty] = true
