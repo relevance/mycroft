@@ -1,10 +1,10 @@
 $LOAD_PATH << "config"
 
-set :application, "zap"
+set :application, "mycroft"
 set :scm, :git
 set(:current_branch)     { `git branch`.match(/\* (\S+)\s/m)[1] || raise("Couldn't determine current branch") }
 set :branch,             defer { current_branch }
-set :repository, "git@github.com:relevance/zap.git"
+set :repository, "git@github.com:relevance/mycroft.git"
 set :deploy_to, "/var/www/apps/#{application}"
 
 set :deploy_via, :copy
