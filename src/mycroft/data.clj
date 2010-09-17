@@ -11,6 +11,11 @@
   [s]
   (map vector (iterate inc 0) s))
 
+(defn add-selector [options s]
+  (if (:selector options)
+    (update-in options [:selector] conj s)
+    (assoc options :selector [s])))
+
 (declare render-collection render-string)
 
 (defmulti keyed class)
@@ -20,7 +25,6 @@
 
 (defn tag
   [t]
-  (println "t is " t)
   (cond
    (nil? t) nil
    (-> t .getClass .isArray) :Array
@@ -30,7 +34,6 @@
 (defmethod render-type nil [this options]
   (render-type "&lt;nil&gt;" options))
 (defmethod render-type :Array [this options]
-  (pprint {:this this :options options})
   (render-type (seq this) options))
 (defmethod render-type java.util.Collection [this options]
   (render-collection this options))
@@ -39,27 +42,35 @@
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
   (render-collection this options))
 (defmethod render-type clojure.lang.IRef [this options]
-  (render-type @this options))
+  (render-type @this (add-selector options ::deref)))
 (defmethod render-type clojure.lang.Var [this options]
   (if (fn? @this)
     (docs/render this options)
-    (render-type @this options)))
+    (render-type @this (add-selector options ::deref))))
 (defmethod render-type :default [this options]
   (render-string this options))
 
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
 (defn- select
-  "Like get-in, but uses nth to follow (in O(n) time!)
-   lazy sequences."
+  "Like get-in on steroids.
+
+   * uses nth to follow (in O(n) time!) lazy sequences.
+   * follows magic key mycroft.data/meta to metadata"
   [item selectors]
   (reduce
    (fn [item sel]
-     (if (integer? sel)
-       (nth item sel)
-       (get item sel)))
+     (cond
+      (= sel ::deref) @item
+      (= sel ::meta) (meta item)
+      (associative? item) (get item sel)
+      (integer? sel) (nth item sel)))
    item
    selectors))
+
+(defn url
+  [options]
+  (str "?" (encode-params options)))
 
 (defn normalize-options
   "Convert options from string form (as coming in from web)
@@ -78,7 +89,11 @@
    :start    : start at the nth item
    :count    : how many items to show"
   [obj options]
-  (render-type obj (normalize-options options)))
+  (let [options (normalize-options options)
+        selection (select obj (:selector options))]
+    [:div
+     [:a {:href (url (add-selector options ::meta))} "metadata"]
+     (render-type selection options)]))
 
 (defn render-string
   [content options]
@@ -92,15 +107,6 @@
         (if href
           [:a {:href href} content-html]
           content-html)])))
-
-(defn add-selector [options s]
-  (if (:selector options)
-    (update-in options [:selector] conj s)
-    (assoc options :selector [s])))
-
-(defn url
-  [options]
-  (str "?" (encode-params options)))
 
 (defn render-row
   [row options]
@@ -127,8 +133,7 @@
 
 (defn render-collection
   [content {:keys [selector start count] :as options}]
-  (let [content (if selector (select content selector) content)
-        content (keyed content)
+  (let [content (keyed content)
         content (if start (drop start content) content)
         content (if count (take count content) content)]
     (if (composite? content)
