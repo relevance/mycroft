@@ -1,7 +1,8 @@
 (ns mycroft.data
   (:use [hiccup.page-helpers :only (encode-params)]
         clojure.pprint)
-  (:require [mycroft.docs :as docs]))
+  (:require [mycroft.docs :as docs]
+            [mycroft.reflect :as reflect]))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -19,7 +20,7 @@
 (declare render-collection render-string)
 
 (defmulti keyed class)
-(defmethod keyed java.util.Set [obj] (map vector obj))
+(defmethod keyed java.util.Set [obj] (indexed obj))
 (defmethod keyed clojure.lang.Sequential [obj] (indexed obj))
 (defmethod keyed :default [obj] obj)
 
@@ -61,9 +62,11 @@
   (reduce
    (fn [item sel]
      (cond
+      (= sel ::reflect) (reflect/reflect item)
       (= sel ::deref) @item
       (= sel ::meta) (meta item)
       (associative? item) (get item sel)
+      (set? item) (nth (seq item) sel)
       (integer? sel) (nth item sel)))
    item
    selectors))
@@ -121,6 +124,8 @@
     [:div
      (render-breadcrumb options)
      [:a {:href (url (add-selector options ::meta))} "metadata"]
+     "&nbsp;|&nbsp;"
+     [:a {:href (url (add-selector options ::reflect))} "reflect"]
      (render-type selection options)]))
 
 (defn render-string
