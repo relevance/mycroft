@@ -80,6 +80,32 @@
     (update-in options [:selector] read-string)
     options))
 
+(defn breadcrumb-text
+  "Convert the internal names for meta and deref into user-friendly terms,
+   everything else renders unchanged."
+  [selector-component]
+  (get {::deref "@" ::meta "&lt;meta&gt;"} selector-component selector-component))
+
+#_(defn drop-initial-deref
+  "If the first selector is a deref, we don't want to show it, since
+   it gets navigated automatically."
+  [options]
+  (if 
+    (update-in options [:selector] subvec 1)
+    options))
+
+(defn render-breadcrumb
+  [options]
+  (let [selector (:selector options)
+        first-crumb (if (= ::deref (first (:selector options))) 2 1)]
+    [:div
+     (->> (map (fn [n] (subvec selector 0 n)) (range first-crumb (count selector)))
+          (map (fn [partial-selector]
+                 [:span
+                  " &raquo; "
+                  [:a {:href (url (assoc options :selector partial-selector))} (breadcrumb-text (last partial-selector)) ]])))
+      [:span " &raquo; " (breadcrumb-text (last selector))]]))
+
 (defn render
   "Given a var and some options, render the var
    as html. Options:
@@ -90,8 +116,10 @@
    :count    : how many items to show"
   [obj options]
   (let [options (normalize-options options)
-        selection (select obj (:selector options))]
+        selector (:selector options)
+        selection (select obj selector)]
     [:div
+     (render-breadcrumb options)
      [:a {:href (url (add-selector options ::meta))} "metadata"]
      (render-type selection options)]))
 
