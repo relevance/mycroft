@@ -12,7 +12,8 @@ set :copy_exclude, [".git/*"]
 set :copy_compression, :bz2 # Also valid are :zip and :bz2    
 set :use_sudo, !!ENV["SUDO"]
 
-set :domain, ENV['SERVER'] || abort("Error - You must specify a server to deploy to as an environment variable - for example: 'SERVER=web01.example.com cap deploy'")
+#set :domain, ENV['SERVER'] || abort("Error - You must specify a server to deploy to as an environment variable - for example: 'SERVER=web01.example.com cap deploy'")
+set :domain, '173.203.59.138'
 
 set :non_privileged_user, application
 set :user, ENV["CAP_USER"] || non_privileged_user
