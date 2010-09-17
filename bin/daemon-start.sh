@@ -1,13 +1,13 @@
 #/bin/sh
 # based on http://barelyenough.org/blog/2005/03/java-daemon/
-# leaves out the clean shutdown hook for now
+# leaves out the clean shutdown hook
 
 . bin/env.sh
 
 launch_daemon()
 {
   /bin/sh <<EOC
-     java $JVM_ARGS $JAVA_ENV -cp $JARS:$SRC_DIR clojure.main -i $SRC_DIR/examples/daemon.clj -e "(use 'examples.daemon) (daemonize)" <&- &
+     java $JVM_ARGS $JAVA_ENV -cp $JARS:$SRC_DIR clojure.main -i $SRC_DIR/mycroft/daemon.clj -e "(use 'mycroft.daemon) (daemonize)" <&- &
      pid=\$!
      echo \${pid}
 EOC
