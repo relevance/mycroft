@@ -28,8 +28,7 @@
                  "/javascripts/shCore.js"
                  "/javascripts/shBrushClojure.js")]
     [:body {:id "browser"}
-     [:div {:id "header"}
-      [:h2 title]]
+     [:div {:id "header"}]
      [:div {:id "content"}
       body]
      [:div {:id "footer"}
@@ -66,7 +65,7 @@
      (namespace/safe-load-ns ns)
      (html
       (minib-layout
-       (if var (str "Var: " qname) (str "Namespace: " ns))
+       qname
        (if var
          (data/render (find-var (symbol qname)) (keywordize-keys query-params))
          (namespace/var-browser ns)))))))

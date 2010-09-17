@@ -2,7 +2,8 @@
   (:use [hiccup.page-helpers :only (encode-params)]
         clojure.pprint)
   (:require [mycroft.docs :as docs]
-            [mycroft.reflect :as reflect]))
+            [mycroft.reflect :as reflect]
+            [mycroft.namespace :as namespace]))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -101,7 +102,7 @@
   [options]
   (let [selector (:selector options)
         first-crumb (if (= ::deref (first (:selector options))) 2 1)]
-    [:div
+    [:span
      (->> (map (fn [n] (subvec selector 0 n)) (range first-crumb (count selector)))
           (map (fn [partial-selector]
                  [:span
@@ -117,15 +118,19 @@
    :meta     : true to look at metadata instead of data
    :start    : start at the nth item
    :count    : how many items to show"
-  [obj options]
+  [var options]
   (let [options (normalize-options options)
         selector (:selector options)
-        selection (select obj selector)]
+        selection (select var selector)]
     [:div
+     (namespace/namespace-link (.ns var))
+     "/"
+     (namespace/var-link (.ns var) (.sym var))
      (render-breadcrumb options)
-     [:a {:href (url (add-selector options ::meta))} "metadata"]
-     "&nbsp;|&nbsp;"
-     [:a {:href (url (add-selector options ::reflect))} "reflect"]
+     [:div
+      [:a {:href (url (add-selector options ::meta))} "metadata"]
+      "&nbsp;|&nbsp;"
+      [:a {:href (url (add-selector options ::reflect))} "reflect"]]
      (render-type selection options)]))
 
 (defn render-string

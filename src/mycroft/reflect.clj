@@ -48,8 +48,9 @@
 
 (defn reflect
   [cls]
-  (if (class? cls)
-    {:fields (fields-set cls)
-     :methods (methods-set cls)}
-    (reflect (class cls))))
+  (when cls
+    (if (class? cls)
+      {:fields (fields-set cls)
+       :methods (methods-set cls)}
+      (reflect (class cls)))))
 

@@ -13,7 +13,7 @@
   (when-let [ns (find-ns (symbol ns))]
     (sort (keys (ns-publics ns)))))
 
-(defn- namespace-link
+(defn namespace-link
   [ns-name]
   [:a {:href (str "/vars/" ns-name)} ns-name])
 
@@ -27,7 +27,7 @@
         (fn [ns] [:li (namespace-link ns)])
         ns-names)]]))
 
-(defn- var-link
+(defn var-link
   [ns-name var-name]
   [:a {:href (str "/vars/" ns-name "/" (java.net.URLEncoder/encode (str var-name)))} var-name])
 
@@ -40,7 +40,7 @@
 (defn var-browser
   [ns]
   [:div
-   {:class "browse-list variables"}
+   (namespace-link ns)
    [:ul
     (map
      (fn [var] [:li (var-link ns var)])
