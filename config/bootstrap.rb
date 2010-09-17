@@ -21,5 +21,11 @@ Capistrano::Configuration.instance.load do
       sudo "chmod 700 #{home}/.ssh"
       sudo "chmod 600 #{home}/.ssh/authorized_keys"
     end
+    
+    task :reverse_proxy do
+      sudo "apt-get install nginx"
+      upload "config/reverse_proxy_config.nginx", "/etc/nginx/sites-enabled/default"
+      sudo "/etc/init.d/nginx restart"
+    end
   end
 end
