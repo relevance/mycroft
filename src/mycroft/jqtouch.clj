@@ -1,4 +1,4 @@
-(ns zap.jqtouch
+(ns mycroft.jqtouch
   (:use [hiccup.core :only (html)]
         [hiccup.page-helpers :only (doctype include-js include-css)])
   (:require [clojure.string :as str]))

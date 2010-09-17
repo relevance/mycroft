@@ -1,4 +1,4 @@
-(ns zap.main
+(ns mycroft.main
   (:use [ring.adapter.jetty :only (run-jetty)]
         [ring.util.response :only (redirect)]
         [compojure.core :only (defroutes GET POST routes)]
@@ -8,12 +8,12 @@
         [clojure.walk :only (keywordize-keys)])
   (:require
    [compojure.route :as route]
-   [zap.jmx :as jmx]
-   [zap.data :as data]
-   [zap.jqtouch :as jqtouch]
-   [zap.namespace :as namespace]
-   [zap.docs :as docs]
-   [zap.history :as history]
+   [mycroft.jmx :as jmx]
+   [mycroft.data :as data]
+   [mycroft.jqtouch :as jqtouch]
+   [mycroft.namespace :as namespace]
+   [mycroft.docs :as docs]
+   [mycroft.history :as history]
    [clojure.string :as str]))
 
 (defn minib-layout [title & body]

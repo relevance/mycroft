@@ -1,5 +1,5 @@
-(ns zap.examples
-  (:require [zap.jmx :as jmx]))
+(ns mycroft.examples
+  (:require [mycroft.jmx :as jmx]))
 
 (let [abc [:A :B :C :D :E]]
   (def an-atom (atom abc))

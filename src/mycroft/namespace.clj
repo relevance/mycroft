@@ -1,4 +1,4 @@
-(ns zap.namespace)
+(ns mycroft.namespace)
 
 (defn- namespace-names
   "Sorted list of namespace names (strings)."

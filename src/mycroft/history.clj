@@ -1,4 +1,4 @@
-(ns zap.history)
+(ns mycroft.history)
 
 (def history (atom (list)))
 

@@ -1,2 +1,2 @@
-(use 'zap.main)
+(use 'mycroft.main)
 (-main)

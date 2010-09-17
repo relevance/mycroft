@@ -1,4 +1,4 @@
-(ns zap.jmx
+(ns mycroft.jmx
   (:require [clojure.contrib.jmx :as jmx]))
 
 (defn beans

@@ -1,4 +1,4 @@
-(ns zap.docs
+(ns mycroft.docs
   (:use [clojure.pprint :only (pprint)])
   (:require [clojure.string :as str]
             clojure.repl))
