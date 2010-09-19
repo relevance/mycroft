@@ -1,4 +1,5 @@
-(ns mycroft.namespace)
+(ns mycroft.namespace
+  (:require [mycroft.breadcrumb :as breadcrumb]))
 
 (defn- namespace-names
   "Sorted list of namespace names (strings)."
@@ -13,23 +14,16 @@
   (when-let [ns (find-ns (symbol ns))]
     (sort (keys (ns-publics ns)))))
 
-(defn namespace-link
-  [ns-name]
-  [:a {:href (str "/vars/" ns-name)} ns-name])
-
 (defn browser
   ([] (browser (namespace-names)))
   ([ns-names]
      [:div
-      {:class "browse-list"}
+      [:div
+       (breadcrumb/render nil nil nil)]
       [:ul
        (map
-        (fn [ns] [:li (namespace-link ns)])
+        (fn [ns] [:li (breadcrumb/namespace-link ns)])
         ns-names)]]))
-
-(defn var-link
-  [ns-name var-name]
-  [:a {:href (str "/vars/" ns-name "/" (java.net.URLEncoder/encode (str var-name)))} var-name])
 
 (defn safe-load-ns
   [ns]
@@ -40,10 +34,10 @@
 (defn var-browser
   [ns]
   [:div
-   (namespace-link ns)
+   (breadcrumb/render ns nil nil)
    [:ul
     (map
-     (fn [var] [:li (var-link ns var)])
+     (fn [var] [:li (breadcrumb/var-link ns var)])
      (var-names ns))]])
 
 

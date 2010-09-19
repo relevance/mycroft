@@ -1,9 +1,8 @@
 (ns mycroft.data
-  (:use [hiccup.page-helpers :only (encode-params)]
-        clojure.pprint)
+  (:use clojure.pprint)
   (:require [mycroft.docs :as docs]
             [mycroft.reflect :as reflect]
-            [mycroft.namespace :as namespace]))
+            [mycroft.breadcrumb :as breadcrumb]))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -72,10 +71,6 @@
    item
    selectors))
 
-(defn url
-  [options]
-  (str "?" (encode-params options)))
-
 (defn normalize-options
   "Convert options from string form (as coming in from web)
    to data structures as needed."
@@ -83,32 +78,6 @@
   (if (:selector options)
     (update-in options [:selector] read-string)
     options))
-
-(defn breadcrumb-text
-  "Convert the internal names for meta and deref into user-friendly terms,
-   everything else renders unchanged."
-  [selector-component]
-  (get {::deref "@" ::meta "&lt;meta&gt;"} selector-component selector-component))
-
-#_(defn drop-initial-deref
-  "If the first selector is a deref, we don't want to show it, since
-   it gets navigated automatically."
-  [options]
-  (if 
-    (update-in options [:selector] subvec 1)
-    options))
-
-(defn render-breadcrumb
-  [options]
-  (let [selector (:selector options)
-        first-crumb (if (= ::deref (first (:selector options))) 2 1)]
-    [:span
-     (->> (map (fn [n] (subvec selector 0 n)) (range first-crumb (count selector)))
-          (map (fn [partial-selector]
-                 [:span
-                  " &raquo; "
-                  [:a {:href (url (assoc options :selector partial-selector))} (breadcrumb-text (last partial-selector)) ]])))
-      [:span " &raquo; " (breadcrumb-text (last selector))]]))
 
 (defn render
   "Given a var and some options, render the var
@@ -123,14 +92,11 @@
         selector (:selector options)
         selection (select var selector)]
     [:div
-     (namespace/namespace-link (.ns var))
-     "/"
-     (namespace/var-link (.ns var) (.sym var))
-     (render-breadcrumb options)
+     (breadcrumb/render (.ns var) var options)
      [:div
-      [:a {:href (url (add-selector options ::meta))} "metadata"]
+      [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]
       "&nbsp;|&nbsp;"
-      [:a {:href (url (add-selector options ::reflect))} "reflect"]]
+      [:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
      (render-type selection options)]))
 
 (defn render-string
@@ -150,7 +116,7 @@
   [row options]
   (if (second row)
     `[:tr
-      ~(render-cell (first row) {:href (url (add-selector options (first row)))})
+      ~(render-cell (first row) {:href (breadcrumb/url (add-selector options (first row)))})
       ~@(map render-cell (rest row))]
     [:tr (render-cell (first row))]))
 
