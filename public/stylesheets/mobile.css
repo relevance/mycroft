@@ -1,3 +1,4 @@
+html {-webkit-text-size-adjust:none}
 body {
   background-color: #ddd;
   color: #222;
@@ -75,6 +76,7 @@ pre {
   background-color: #F8F8F8;
   padding: .6em;
   margin: .6em;
+  word-wrap: break-word;
 }
 
 pre code{
