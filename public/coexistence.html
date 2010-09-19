@@ -1,8 +1,17 @@
 <html>
-
+<head>
+  <title>Coexistence</title>
+  
+  <link href="/stylesheets/shCore.css" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/shThemeDefault.css" rel="stylesheet" type="text/css" />
+  <!--<link href="/stylesheets/application.css" rel="stylesheet" type="text/css" />-->
+  <link rel="stylesheet" href="/stylesheets/mobile.css" media="handheld"/>
+  <link rel="stylesheet" type="text/css"  href="/stylesheets/mobile.css" media="only screen and (max-width: 480px)" />
+  <meta name="viewport" content="user-scalable=no, width=device-width" />
+</head>
 <body>
 
-<h2>Coexistence</h2>
+  <h2 class="logo"><a href="#">Coexistence</a></h2>
 
 <p>Programming with <a href="/values.html">values</a>
   and <a href="/references.html"> references</a> is liberating, but most of the JVM
@@ -20,18 +29,13 @@
 
 <p>Some examples:</p>
 <ul>
-<li>Recent <a href="/vars/mycroft.examples/browse-history">history</a>
-  of web requests to /vars</li>
 <li><a href="/vars/mycroft.examples.xml/xml-example">XML data</a></li>
+<li><a href="/vars/mycroft.examples/jmx-beans">JMX beans</a></li>
+<li><a href="http://localhost:8080/vars/mycroft.examples/some-strings?selector=%5B%3Amycroft.data%2Fderef+0+%3Amycroft.data%2Freflect%5D">Java reflection</a></li>
 </ul>
 
-<p>A few Java classes are known to be values. Even in these cases, you
-  are often better off converting them to generic data. Some examples
-  include:</p>
-
-<ul>
-<li>Java <a href="http://localhost:8080/vars/mycroft.examples/some-strings?selector=%5B%3Amycroft.data%2Fderef+0+%3Amycroft.data%2Freflect%5D">reflection</a></li>
-</ul>
+<p>(Note: Java reflection classes are known to be values. Even in such cases, you
+  are usually better off converting them to generic data.)</p>
 
 </body>
 </html>

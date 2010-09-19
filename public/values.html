@@ -1,25 +1,34 @@
 <html>
-
+<head>
+  <title>Values</title>
+  
+  <link href="/stylesheets/shCore.css" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/shThemeDefault.css" rel="stylesheet" type="text/css" />
+  <!--<link href="/stylesheets/application.css" rel="stylesheet" type="text/css" />-->
+  <link rel="stylesheet" href="/stylesheets/mobile.css" media="handheld"/>
+  <link rel="stylesheet" type="text/css"  href="/stylesheets/mobile.css" media="only screen and (max-width: 480px)" />
+  <meta name="viewport" content="user-scalable=no, width=device-width" />
+</head>
 <body>
 
-<h2>Values</h2>
+  <h2 class="logo"><a href="#">Values</a></h2>
 
-Values are data, whether simple (numbers, characters) or composite (vectors, maps,
-sets, etc.) All forms of composition nest to arbitrary depth, with no restrictions.
+<p>Values are data, whether simple (numbers, characters) or composite (vectors, maps,
+sets, etc.) All forms of composition nest to arbitrary depth, with no restrictions.</p>
 
-Values can be observed in a generic way: they are not concealed behind
+<p>Values can be observed in a generic way: they are not concealed behind
 any class-specific API, nor do they require any coordination with other
-parties. (In particular, no locking!)
+parties. (In particular, no locking!)</p>
 
-Values are immutable. They <i>must be immutable</i>, to allow generic observation.
+<p>Values are immutable. They <i>must be immutable</i>, to allow generic observation.</p>
 
-Some value examples:
+<p>Some value examples:</p>
 
 <ul>
-<li>a <a href="/vars/mycroft.examples/set-of-maps">set of maps</a></li>
-<li>a <a href="/vars/mycroft.examples/heterogeneous"/>heterogeneous collection</a></li>
-<li>the <a href="http://localhost:8080/vars/clojure.core/flatten?selector=%5B%3Amycroft.data%2Fmeta%5D"/>metadata</a>
-on a Clojure function</li>
+<li><a href="/vars/mycroft.examples/set-of-maps">a set of maps</a></li>
+<li><a href="/vars/mycroft.examples/heterogeneous"/>a heterogeneous collection</a></li>
+<li><a href="http://localhost:8080/vars/clojure.core/flatten?selector=%5B%3Amycroft.data%2Fmeta%5D"/>Clojure
+  metadata</a></li>
 </ul>
 
 </body>
