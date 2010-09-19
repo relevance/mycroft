@@ -28,6 +28,7 @@
 	font-size: 1em !important;
 	min-height: inherit !important; /* For IE8, FF & WebKit */
 	min-height: auto !important; /* For IE7 */
+	white-space: pre !important;
 }
 
 .syntaxhighlighter

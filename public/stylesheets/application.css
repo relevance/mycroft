@@ -94,7 +94,7 @@ ol li { list-style-type: decimal; margin-left: 20px; }
   margin: 0 auto;
 }
 #browser #header, #browser #footer, #browser #content {
-  width: 940px;
+  max-width: 940px;
 }
 
 /* Header styles */

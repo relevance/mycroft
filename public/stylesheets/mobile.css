@@ -1,0 +1,83 @@
+body {
+  background-color: #ddd;
+  color: #222;
+  font-family: Helvetica; 
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+#header {
+  background:#ccc;
+  border-bottom: 1px solid #666;
+}
+h2.logo {
+  background:#ccc;
+  border-bottom: 1px solid #666;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+a:visited { color: #222;}
+h2.logo a:link,
+h2.logo a:visited {
+  background: transparent url(clojure_logo_sm.png) 0 6px no-repeat;
+  color: #222;
+  display: inline-block;
+  margin: 0 auto;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 0 10px 35px;
+  text-align: center;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+  margin: 10px;
+  padding: 0;
+}
+ul li a {
+  background-color: #FFFFFF;
+  border: 1px solid #999999;
+  color: #222222;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: -1px;
+  padding: 12px 10px;
+  text-decoration: none;
+}
+#content,
+#header,
+#footer {
+  width: 100%;
+}
+#content {
+
+}
+
+#footer p,
+#content p {
+  padding: 0 10px;
+}
+#footer {
+    display: none;
+}
+
+ul li:first-child a {
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-top-right-radius: 8px;
+}
+ul li:last-child a {
+  -webkit-border-bottom-left-radius: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+}
+code {
+
+}
+pre { 
+
+}
+#browser div.syntaxhighlighter { width: 100em !important; }
+div.syntaxhighlighter.nogutter div.line { background-color: #F8F8F8 !important; }
