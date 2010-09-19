@@ -27,7 +27,7 @@
 
 (defn render
   [ns var {:keys [selector] :as options}]
-  [:div
+  [:div {:id "breadcrumb"}
    (top-link ns)
    (when ns
      [:span " &laquo; "

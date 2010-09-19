@@ -94,15 +94,13 @@
         selection (select var selector)]
     [:div
      (breadcrumb/render (.ns var) var options)
-     [:div
+     [:div {:id "buttons"}
       (when (meta selection)
         [:span
-         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]
-         "&nbsp;|&nbsp;"])
+         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]])
       (when-let [doc-url (docs/doc-url selection)]
         [:span
-         [:a {:href doc-url} "docs"]
-         "&nbsp;|&nbsp;"])
+         [:a {:href doc-url} "docs"]])
       [:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
      (render-type selection options)]))
 

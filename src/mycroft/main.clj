@@ -22,7 +22,7 @@
      [:title title]
      (include-css "/stylesheets/shCore.css"
                   "/stylesheets/shThemeDefault.css")
-                  [:link {:type "text/css", :href "/stylesheets/application.css", :rel "stylesheet", :media "screen (min-width: 600px)"}]
+                  [:link {:type "text/css", :href "/stylesheets/application.css", :rel "stylesheet", :media "only screen and (min-width: 600px)"}]
                   [:link {:type "text/css", :href "/stylesheets/mobile.css", :rel "stylesheet", :media "only screen and (max-width: 600px)"}]
      [:meta {:name "viewport" :content "user-scalable=no, width=device-width"}]
      (include-js "/jqtouch/jquery.1.3.2.min.js"
@@ -30,7 +30,7 @@
                  "/javascripts/shCore.js"
                  "/javascripts/shBrushClojure.js")]
     [:body {:id "browser"}
-     [:div {:id "header"}]
+     [:h2 {:class "logo"} [:a {:href "/index.html"} "Mycroft, a Clojure inspector"]]
      [:div {:id "content"}
       body]
      [:div {:id "footer"}

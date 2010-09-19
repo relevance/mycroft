@@ -15,8 +15,8 @@ h2.logo {
   background:#ccc;
   border-bottom: 1px solid #666;
   margin: 0;
-  padding: 0;
-  text-align: center;
+  padding: 0 0 0 10px;
+  text-align: left;
 }
 a:visited { color: #222;}
 h2.logo a:link,
@@ -25,7 +25,7 @@ h2.logo a:visited {
   color: #222;
   display: inline-block;
   margin: 0 auto;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   padding: 10px 0 10px 35px;
   text-align: center;
@@ -48,17 +48,12 @@ ul li a {
   padding: 12px 10px;
   text-decoration: none;
 }
-#content,
-#header,
-#footer {
-  width: 100%;
-}
+
 #content {
-
+  margin: 10px;
 }
 
-#footer p,
-#content p {
+p, h4 {
   padding: 0 10px;
 }
 #footer {
@@ -73,11 +68,54 @@ ul li:last-child a {
   -webkit-border-bottom-left-radius: 8px;
   -webkit-border-bottom-right-radius: 8px;
 }
-code {
 
+pre {
+  border: 1px solid gray;
+  background-color: #F8F8F8;
+  padding: .6em;
+  margin: .6em;
 }
-pre { 
 
+pre code{
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
-#browser div.syntaxhighlighter { width: 100em !important; }
-div.syntaxhighlighter.nogutter div.line { background-color: #F8F8F8 !important; }
+#breadcrumb {
+  margin: 10px;
+  background: #ebebeb;
+  padding: 5px 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#buttons {
+  padding: 5px;
+}
+
+#buttons a:link,
+#buttons a:visited {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  padding: 5px 7px;
+  text-decoration: none;
+  color: #069;
+  display: inline-block;
+  margin-right: 10px;
+}
+h2.logo a.home {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 5px;
+}
+
+table.data               {font-family: Lucida Grande, Arial; font-size: 8pt; border-collapse: collapse;}
+table.data tr td         {vertical-align: top; padding-left: 3px; padding-top: 3px;}
+table.data td            {border: solid 1px gray; padding: 5px;}
+table.data tr {background-color: #ebebeb; }
+table.data tr:nth-child(2n)        {background-color: #fff; }
