@@ -96,6 +96,10 @@
      [:div
       [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]
       "&nbsp;|&nbsp;"
+      (when-let [doc-url (docs/doc-url selection)]
+        [:span
+         [:a {:href doc-url} "docs"]
+         "&nbsp;|&nbsp;"])
       [:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
      (render-type selection options)]))
 

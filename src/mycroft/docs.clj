@@ -1,6 +1,7 @@
 (ns mycroft.docs
   (:use [clojure.pprint :only (pprint)])
   (:require [clojure.string :as str]
+            [clojure.java.javadoc :as javadoc]
             clojure.repl))
 
 (defn- format-code
@@ -41,3 +42,13 @@
    [:h4 "Source"]
    (code* (clojure.repl/source-fn (var-symbol var)))])
 
+(def javadoc-url @#'javadoc/javadoc-url)
+
+(defn doc-url
+  [o]
+  (when o
+    (if (class? o)
+      (binding [javadoc/*feeling-lucky* false]
+        (println "checking for " o)
+        (javadoc-url (.getName o)))
+      (doc-url (class o)))))
