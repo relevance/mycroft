@@ -7,13 +7,13 @@
         [clojure.pprint :only (pprint)]
         [clojure.walk :only (keywordize-keys)])
   (:require
+   [mycroft.examples :as examples]
    [compojure.route :as route]
    [mycroft.jmx :as jmx]
    [mycroft.data :as data]
    [mycroft.jqtouch :as jqtouch]
    [mycroft.namespace :as namespace]
    [mycroft.docs :as docs]
-   [mycroft.history :as history]
    [clojure.string :as str]))
 
 (defn minib-layout [title & body]
@@ -71,7 +71,7 @@
          (namespace/var-browser ns)))))))
 
 (def dynamic-routes (routes jmx-routes
-                            (-> namespace-routes history/with-recent-history)
+                            (-> namespace-routes examples/with-recent-history)
                             var-routes))
 
 (defroutes static-routes

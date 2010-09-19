@@ -14,6 +14,13 @@
   #{{:A 1 :B 2}
     {:A 3 :C 4}})
 
+(def heterogeneous
+  [42
+   3.14159
+   "foo"
+   :keyword
+   {:fname "John" :lname "Doe"}])
+
 (def some-strings
   ["these" "are" "fine"])
 
@@ -27,3 +34,17 @@
 
 (def jmx-beans
   (jmx/beans "*:*"))
+
+(def browse-history (atom (list)))
+
+(defn append-to-history
+  [request]
+  (swap! browse-history #(->> % (cons request) (take 50))))
+
+(defn with-recent-history [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (when response
+        (append-to-history request)
+        response))))
+

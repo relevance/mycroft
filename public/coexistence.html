@@ -1,0 +1,39 @@
+<html>
+
+<body>
+
+<h2>Coexistence</h2>
+
+<p>Programming with <a href="/values.html">values</a>
+  and <a href="/references.html"> references</a> is liberating, but most of the JVM
+  world doesn't work that way yet. In Java, and most other JVM
+  languages, there
+  is <a href="http://stackoverflow.com/questions/203475/how-do-i-identify-immutable-objects-in-java">no
+  way to tell</a> if an object is a value or a reference. And in fact,
+  most JVM objects are neither! As a result, reading values from an
+  arbitrary Java object requires coordination through a different
+  specific API for every object.</p>
+
+<p>The best thing you can do in this situation is get out of APIs as
+  quickly as possible, converting specific objects into generic data as
+  soon as you possibly can.</p>
+
+<p>Some examples:</p>
+<ul>
+<li>Recent <a href="/vars/mycroft.examples/browse-history">history</a>
+  of web requests to /vars</li>
+<li><a href="/vars/mycroft.examples.xml/xml-example">XML data</a></li>
+</ul>
+
+<p>A few Java classes are known to be values. Even in these cases, you
+  are often better off converting them to generic data. Some examples
+  include:</p>
+
+<ul>
+<li>Java <a href="http://localhost:8080/vars/mycroft.examples/some-strings?selector=%5B%3Amycroft.data%2Fderef+0+%3Amycroft.data%2Freflect%5D">reflection</a></li>
+</ul>
+
+</body>
+</html>
+
+

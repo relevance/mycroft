@@ -1,0 +1,28 @@
+<html>
+
+<body>
+
+<h2>Values</h2>
+
+Values are data, whether simple (numbers, characters) or composite (vectors, maps,
+sets, etc.) All forms of composition nest to arbitrary depth, with no restrictions.
+
+Values can be observed in a generic way: they are not concealed behind
+any class-specific API, nor do they require any coordination with other
+parties. (In particular, no locking!)
+
+Values are immutable. They <i>must be immutable</i>, to allow generic observation.
+
+Some value examples:
+
+<ul>
+<li>a <a href="/vars/mycroft.examples/set-of-maps">set of maps</a></li>
+<li>a <a href="/vars/mycroft.examples/heterogeneous"/>heterogeneous collection</a></li>
+<li>the <a href="http://localhost:8080/vars/clojure.core/flatten?selector=%5B%3Amycroft.data%2Fmeta%5D"/>metadata</a>
+on a Clojure function</li>
+</ul>
+
+</body>
+</html>
+
+

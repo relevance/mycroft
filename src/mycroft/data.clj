@@ -1,5 +1,6 @@
 (ns mycroft.data
-  (:use clojure.pprint)
+  (:use clojure.pprint
+        [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]
             [mycroft.reflect :as reflect]
             [mycroft.breadcrumb :as breadcrumb]))
@@ -94,8 +95,10 @@
     [:div
      (breadcrumb/render (.ns var) var options)
      [:div
-      [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]
-      "&nbsp;|&nbsp;"
+      (when (meta selection)
+        [:span
+         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]
+         "&nbsp;|&nbsp;"])
       (when-let [doc-url (docs/doc-url selection)]
         [:span
          [:a {:href doc-url} "docs"]
@@ -110,7 +113,7 @@
 (defn render-cell
   ([content] (render-cell content nil))
   ([content {:keys [href]}]
-     (let [content-html (str content)]
+     (let [content-html (escape-html (str content))]
        [:td
         (if href
           [:a {:href href} content-html]
