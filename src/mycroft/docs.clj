@@ -13,6 +13,18 @@
                   (with-out-str (pprint code))))
               codes)))
 
+(defn doc-string
+  [v]
+  (let [m (meta v)]
+    (str (ns-name (:ns m))
+         "/"
+         (:name m)
+         "\n"
+         (:arglists m)
+         "\n"
+         (if (:macro m) "Macro\n" "")
+         (:doc m))))
+
 (defn- one-liner?
   [s]
   (if s
@@ -37,8 +49,7 @@
   [var options]
   [:div
    [:h4 "Docstring"]
-   [:pre [:code
-          (with-out-str (print-doc var))]]
+   [:pre [:code (doc-string var)]]
    [:h4 "Source"]
    (code* (clojure.repl/source-fn (var-symbol var)))])
 

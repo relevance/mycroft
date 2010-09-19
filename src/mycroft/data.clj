@@ -25,6 +25,12 @@
 (defmethod keyed clojure.lang.Sequential [obj] (indexed obj))
 (defmethod keyed :default [obj] obj)
 
+(defn safe-deref
+  [v]
+  (try
+   (deref v)
+   (catch IllegalStateException e e)))
+
 (defn tag
   [t]
   (cond
@@ -46,9 +52,9 @@
 (defmethod render-type clojure.lang.IRef [this options]
   (render-type @this (add-selector options ::deref)))
 (defmethod render-type clojure.lang.Var [this options]
-  (if (fn? @this)
+  (if (fn? (safe-deref this))
     (docs/render this options)
-    (render-type @this (add-selector options ::deref))))
+    (render-type (safe-deref this) (add-selector options ::deref))))
 (defmethod render-type :default [this options]
   (render-string this options))
 
