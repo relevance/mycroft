@@ -7,7 +7,7 @@
 launch_daemon()
 {
   /bin/sh <<EOC
-     java $JVM_ARGS $JAVA_ENV -cp $JARS:$SRC_DIR clojure.main -i $SRC_DIR/mycroft/daemon.clj -e "(use 'mycroft.daemon) (daemonize)" <&- &
+     java $JVM_ARGS $JAVA_ENV -cp $JARS:$SRC_DIR:$DATA_DIR clojure.main -i $SRC_DIR/mycroft/daemon.clj -e "(use 'mycroft.daemon) (daemonize)" <&- &
      pid=\$!
      echo \${pid}
 EOC
