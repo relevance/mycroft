@@ -1,30 +1,38 @@
 <html>
-
+<head>
+  <title>mycroft.examples</title>
+  
+  <link href="/stylesheets/shCore.css" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/shThemeDefault.css" rel="stylesheet" type="text/css" />
+  <!--<link href="/stylesheets/application.css" rel="stylesheet" type="text/css" />-->
+  <link rel="stylesheet" href="/stylesheets/mobile.css" media="handheld"/>
+  <link rel="stylesheet" type="text/css"  href="/stylesheets/mobile.css" media="only screen and (max-width: 480px)" />
+  <meta name="viewport" content="user-scalable=no, width=device-width" />
+</head>
 <body>
 
-<h2>Clojure Inspector</h2>
+  <h2 class="logo"><a href="#">Mycroft, a Clojure inspector</a></h2>
 
-Key elements include:
+  <div id="content">
+    <p>Key elements include:</p>
 
-<ul>
-<li><a href="vars">Browse Namespaces</a></li>
-<li><a href="vars/clojure.core">Browse Vars in a Namespace</a></li>
-<li><a href="vars/clojure.core/complement">Browse a Var that is a Fn</a></li>
-<li><a href="vars/mycroft.examples">Browse some Vars that are data</a></li>
-</ul>
+    <ul>
+    <li><a href="vars">Browse Namespaces</a></li>
+    <li><a href="vars/clojure.core">Browse Vars in a Namespace</a></li>
+    <li><a href="vars/clojure.core/complement">Browse a Var that is a Fn</a></li>
+    <li><a href="vars/mycroft.examples">Browse some Vars that are data</a></li>
+    </ul>
 
-Everything is made of data and functions:
+    <p>Everything is made of data and functions:</p>
 
-<ul>
-<li><a href="/vars/mycroft.examples/jmx-beans">Browse JMX Beans</a></li> 
-<li>Browse recent <a href="/vars/mycroft.history">history</a></li>
-<li>Browse Interactive REPL result</li>
-<li>Browse Java things</li>
-</ul>
+    <ul>
+    <li><a href="/vars/mycroft.examples/jmx-beans">Browse JMX Beans</a></li> 
+    <li><a href="/vars/mycroft.history">Browse recent history</a></li>
+    <li><a href="#">Browse Interactive REPL result</a></li>
+    <li><a href="#">Browse Java things</a></li>
+    </ul>
 
-Everything is thread safe.
-
+    <p>Everything is thread safe.</p>
+  </div>
 </body>
 </html>
-
-
