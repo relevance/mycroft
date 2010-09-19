@@ -72,7 +72,7 @@ ul li:last-child a {
 }
 
 pre {
-  border: 1px solid gray;
+  border: 1px solid #ccc;
   background-color: #F8F8F8;
   padding: .6em;
   margin: .6em;
