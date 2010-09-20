@@ -60,6 +60,5 @@
   (when o
     (if (class? o)
       (binding [javadoc/*feeling-lucky* false]
-        (println "checking for " o)
         (javadoc-url (.getName o)))
       (doc-url (class o)))))

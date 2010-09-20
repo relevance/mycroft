@@ -50,7 +50,7 @@
 
 (defmulti render-type (fn [type options] (tag type)))
 (defmethod render-type nil [this options]
-  (render-type "&lt;nil&gt;" options))
+  (render-type "<nil>" options))
 (defmethod render-type :Array [this options]
   (render-type (seq this) options))
 (defmethod render-type java.util.Collection [this options]
@@ -133,7 +133,7 @@
 
 (defn render-string
   [content options]
-  [:pre (str content)])
+  [:pre (escape-html (str content))])
 
 (defn abbreviate
   [item]
