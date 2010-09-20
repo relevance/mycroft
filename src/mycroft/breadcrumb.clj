@@ -23,10 +23,10 @@
   "Convert the internal names for meta and deref into user-friendly terms,
    everything else renders unchanged."
   [selector-component]
-  (get {::deref "@" ::meta "&lt;meta&gt;"} selector-component selector-component))
+  (get {:mycroft.data/deref "@" :mycroft.data/meta "&lt;meta&gt;"} selector-component selector-component))
 
 (defn render
-  [ns var {:keys [selector] :as options}]
+  [ns var {:keys [selector]}]
   [:div {:id "breadcrumb"}
    (top-link ns)
    (when ns
@@ -37,12 +37,13 @@
       (if selector (var-link (.ns var) (.sym var)) (.sym var))])
 
    (when selector
-     (let [first-crumb (if (= ::deref (first (:selector options))) 2 1)]
+     (let [first-crumb (if (= ::deref (first selector)) 2 1)]
        [:span
         (->> (map (fn [n] (subvec selector 0 n)) (range first-crumb (count selector)))
              (map (fn [partial-selector]
                     [:span
                      " &raquo; "
-                     [:a {:href (url (assoc options :selector partial-selector))} (breadcrumb-text (last partial-selector)) ]])))
+                     [:a {:href (url {:selector partial-selector})}
+                      (breadcrumb-text (last partial-selector)) ]])))
         [:span " &raquo; " (breadcrumb-text (last selector))]]))])
 
