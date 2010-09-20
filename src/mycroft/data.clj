@@ -128,7 +128,7 @@
       (when-let [doc-url (docs/doc-url selection)]
         [:span
          [:a {:href doc-url} "docs"]])
-      [:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
+      #_[:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
      (render-type selection options)]))
 
 (defn render-string

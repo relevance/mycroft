@@ -7,14 +7,13 @@
         [clojure.pprint :only (pprint)]
         [clojure.walk :only (keywordize-keys)])
   (:require
-   [mycroft.examples :as examples]
    [compojure.route :as route]
    [mycroft.jmx :as jmx]
    [mycroft.data :as data]
-   [mycroft.jqtouch :as jqtouch]
    [mycroft.namespace :as namespace]
    [mycroft.docs :as docs]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [mycroft.examples :as examples]))
 
 (defn minib-layout [title & body]
   (html
@@ -24,7 +23,7 @@
                   "/stylesheets/shThemeDefault.css")
                   [:link {:type "text/css", :href "/stylesheets/mobile.css", :rel "stylesheet", :media ""}]
      [:meta {:name "viewport" :content "user-scalable=no, width=device-width"}]
-     (include-js "/jqtouch/jquery.1.3.2.min.js"
+     (include-js "/javascripts/jquery.1.3.2.min.js"
                  "/javascripts/application.js"
                  "/javascripts/shCore.js"
                  "/javascripts/shBrushClojure.js")]
@@ -45,10 +44,6 @@
                       "\n\tParameters " (:params request)
                       "\n\tSession " (:session request)))
         response))))
-
-(defroutes jmx-routes
-  (GET "/jmx" [] (jqtouch/layout))
-  (GET "/stuff" [] (html (jqtouch/gui-seq (jmx/beans "*:*")))))
 
 (defroutes namespace-routes
   (GET "/vars" []
@@ -71,8 +66,7 @@
          (data/render (find-var (symbol qname)) (keywordize-keys query-params))
          (namespace/var-browser ns)))))))
 
-(def dynamic-routes (routes jmx-routes
-                            (-> namespace-routes examples/with-recent-history)
+(def dynamic-routes (routes (-> namespace-routes examples/with-recent-history)
                             var-routes))
 
 (defroutes static-routes

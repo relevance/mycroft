@@ -20,7 +20,7 @@
   way to tell</a> if an object is a value or a reference. And in fact,
   most JVM objects are neither! As a result, reading values from an
   arbitrary Java object requires coordination through a different
-  specific API for every object.</p>
+  specific API for every library.</p>
 
 <p>The best thing you can do in this situation is get out of APIs as
   quickly as possible, converting specific objects into generic data as
@@ -30,11 +30,7 @@
 <ul>
 <li><a href="/vars/mycroft.examples.xml/xml-example">XML data</a></li>
 <li><a href="/vars/mycroft.examples/jmx-beans">JMX beans</a></li>
-<li><a href="/vars/mycroft.examples/some-strings?selector=%5B%3Amycroft.data%2Fderef+0+%3Amycroft.data%2Freflect%5D">Java reflection</a></li>
 </ul>
-
-<p>(Note: Java reflection classes are known to be values. Even in such cases, you
-  are usually better off converting them to generic data.)</p>
 
 </body>
 </html>

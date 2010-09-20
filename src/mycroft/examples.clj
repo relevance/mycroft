@@ -41,6 +41,14 @@
   [request]
   (swap! browse-history #(->> % (cons request) (take 50))))
 
+(def metrics
+  (let [ns (filter #(-> % (.getName) str (.startsWith "mycroft"))
+                   (all-ns))
+        var-count (apply + (map #(count (ns-interns %)) ns))]
+    {:metrics-for "Mycroft"
+     :namespaces (count ns)
+     :vars var-count}))
+
 (defn with-recent-history [handler]
   (fn [request]
     (let [response (handler request)]
