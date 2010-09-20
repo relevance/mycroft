@@ -1,9 +1,11 @@
-(ns mycroft.main)
+(ns mycroft.main
+  (:require mycroft.server))
 
-(defn -main []
-  (def inspector (mycroft.server.Instance. 8080))
-  (.launch inspector))
+(def inspector (mycroft.server.Instance. 8080))
 
 (defn inspect
   [o]
   (.inspect inspector o))
+
+(.launch inspector)
+

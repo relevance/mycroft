@@ -6,6 +6,6 @@ done
 
 export JARS
 export SRC_DIR=src
-export DATA_DIR=data
+export RESOURCES_DIR=resources
 export TEST_DIRS=test
 export JVM_ARGS="-Xmx1G"

@@ -10,6 +10,7 @@
   (:require
    [compojure.route :as route]
    [mycroft.jmx :as jmx]
+   [mycroft.resources :as resources]
    [mycroft.data :as data]
    [mycroft.namespace :as namespace]
    [mycroft.docs :as docs]
@@ -72,11 +73,12 @@
                             var-routes))
 
 (defroutes static-routes
-  (route/files "/")
+  (resources/resources "/" {:root "/public"})
   (route/not-found "not found"))
 
 (defroutes app
-  (routes (-> dynamic-routes with-logging)
+  (routes dynamic-routes
+          #_(-> dynamic-routes with-logging)
           static-routes))
 
 (defprotocol Inspector
