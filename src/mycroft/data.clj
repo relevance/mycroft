@@ -1,6 +1,7 @@
 (ns mycroft.data
   (:use clojure.pprint
-        [hiccup.core :only (escape-html)])
+        [hiccup.core :only (escape-html)]
+        [clojure.contrib.core :only (.?.)])
   (:require [mycroft.docs :as docs]
             [mycroft.breadcrumb :as breadcrumb]))
 
@@ -96,8 +97,7 @@
    :count    : how many items to show"
   [var options]
   (let [selector (:selector options)
-        selection (select var selector)
-        classname (.getName (class selection))]
+        selection (select var selector)]
     [:div
      (breadcrumb/render (.ns var) var options)
      [:div.buttons
@@ -105,8 +105,10 @@
         [:span
          [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]]
         [:span.disabled-button "metadata"])
-      [:span
-       [:a {:href (str "/classes/" classname)} (str "class " classname)]]
+      (if-let [classname (.?. selection getClass getName)]
+        [:span
+         [:a {:href (str "/classes/" classname)} (str "class " classname)]]
+        [:span.disabled-button "no class"])
       (if-let [doc-url (docs/doc-url selection)]
         [:span
          [:a {:href doc-url} "api docs"]]
@@ -169,10 +171,13 @@
 
 (defn render-table
   [content {:keys [start] :as options}]
-  [:table.data
-   (map
-    #(render-row % options)
-    content)])
+  (if (seq content)
+    [:table.data
+     (map
+      #(render-row % options)
+      content)]
+    [:table.data
+     [:th "Collection is empty."]]))
 
 (defn render-collection
   [content {:keys [selector start] :as options}]
