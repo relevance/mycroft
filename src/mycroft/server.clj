@@ -123,5 +123,8 @@
           (run-jetty (var app) {:port port
                                 :join? false}))
   (inspect [_ obj]
-           (browse-url (str "http://localhost:" port
-                            (history/add obj)))))
+           (if (class? obj)
+             (browse-url (str "http://localhost:" port
+                              "/classes/" (.getName obj)))
+             (browse-url (str "http://localhost:" port
+                              (history/add obj))))))

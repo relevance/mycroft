@@ -1,11 +1,23 @@
 (ns mycroft.main
   (:require mycroft.server))
 
-(def inspector (mycroft.server.Instance. 8080))
+(def inspector nil)
 
-(defn inspect
+(defn run
+  [port]
+  (alter-var-root #'inspector (constantly (mycroft.server.Instance. port)))
+  (.launch inspector))
+
+(defmacro inspect
   [o]
-  (.inspect inspector o))
+  (if inspector
+    (if (symbol? o)
+      (if-let [resolved (ns-resolve *ns* o)]
+        `(.inspect inspector ~resolved)
+        `(.inspect inspector '~o))
+      `(.inspect inspector ~o))
+    
+    "Launch the inspector with (mycroft.main/run port) first!"))
 
-(.launch inspector)
+
 

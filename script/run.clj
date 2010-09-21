@@ -1,1 +1,2 @@
-(use 'mycroft.main)
+(use '[mycroft.main :only (inspect)])
+(mycroft.main/run 8080)
