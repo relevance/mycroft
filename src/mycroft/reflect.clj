@@ -1,5 +1,5 @@
 (ns mycroft.reflect
-  (:import java.lang.reflect.Modifier))
+  (:import [java.lang.reflect Field Constructor Method Modifier]))
 
 (defn modifiers->set
   [mod]
@@ -17,8 +17,22 @@
                 (when (Modifier/isTransient mod) :transient)
                 (when (Modifier/isVolatile mod) :volatile)])))
 
+(defn constructor->map
+  [^Constructor constructor]
+  {:name (.getName constructor)
+   :declaring-class (.getDeclaringClass constructor)
+   :parameter-types (vec (.getParameterTypes constructor))
+   :exception-types (vec (.getExceptionTypes constructor))
+   :modifiers (modifiers->set (.getModifiers constructor))})
+
+(defn constructors-set
+  [^Class cls]
+  (set (map
+        constructor->map
+        (.getDeclaredConstructors cls))))
+
 (defn method->map
-  [method]
+  [^Method method]
   {:name (.getName method)
    :return-type (.getReturnType method)
    :declaring-class (.getDeclaringClass method)
@@ -27,23 +41,23 @@
    :modifiers (modifiers->set (.getModifiers method))})
 
 (defn methods-set
-  [cls]
+  [^Class cls]
   (set (map
         method->map
-        (.getMethods cls))))
+        (.getDeclaredMethods cls))))
 
 (defn field->map
-  [field]
+  [^Field field]
   {:name (.getName field)
    :type (.getType field)
    :declaring-class (.getDeclaringClass field)
    :modifiers (modifiers->set (.getModifiers field))})
 
 (defn fields-set
-  [cls]
+  [^Class cls]
   (set (map
         field->map
-        (.getFields cls))))
+        (.getDeclaredFields cls))))
 
 
 (defn reflect
@@ -51,6 +65,7 @@
   (when cls
     (if (class? cls)
       {:fields (fields-set cls)
-       :methods (methods-set cls)}
+       :methods (methods-set cls)
+       :constructors (constructors-set cls)}
       (reflect (class cls)))))
 

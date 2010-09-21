@@ -136,11 +136,21 @@
 
 (defn render-row
   [row options]
-  (if (second row)
-    `[:tr
-      ~(render-cell (first row) {:href (breadcrumb/url (add-selector options (first row)))})
-      ~@(map render-cell (rest row))]
-    [:tr (render-cell (first row))]))
+  {:pre (= 2 (count row))}
+  `[:tr
+    ~(render-cell (first row) {:href (breadcrumb/url (add-selector options (first row)))})
+    ~@(map render-cell (rest row))])
+
+(defn render-row-matching-headers
+  [[key obj :as row] {:keys [headers] :as options}]
+  {:pre [(= 2 (count row))
+         (associative? obj)]}
+  `[:tr
+    ~(render-cell key {:href (breadcrumb/url (add-selector options key))})
+    ~@(let [explicit-columns (map obj headers)]
+        (map render-cell explicit-columns))
+    ~(let [rest-of-object (apply dissoc obj headers)]
+        (render-cell rest-of-object))])
 
 (defn composite?
   [x]
@@ -169,13 +179,28 @@
         "next"]
        [:span.disabled-button "next"])]))
 
+(defn render-table-with-headers
+  [content {:keys [headers] :as options}]
+  `[:table.data
+    [:thead
+     [:tr
+      ~@(map #(vector :td %) (concat ["&nbsp;"] headers))]]
+    [:tbody
+     ~@(map
+        (fn [o]
+          (println o)
+          (render-row-matching-headers o options))
+        content)]])
+
 (defn render-table
-  [content {:keys [start] :as options}]
+  [content {:keys [headers] :as options}]
   (if (seq content)
-    [:table.data
-     (map
-      #(render-row % options)
-      content)]
+    (if headers
+      (render-table-with-headers content options)
+      [:table.data
+       (map
+        #(render-row % options)
+        content)])
     [:table.data
      [:th "Collection is empty."]]))
 
