@@ -20,9 +20,9 @@
 
 (defn add-selector
   [options s]
-  (let [options (if (:selector options)
-                  (update-in options [:selector] conj s)
-                  (assoc options :selector [s]))
+  (let [options (if (:selectors options)
+                  (update-in options [:selectors] conj s)
+                  (assoc options :selectors [s]))
         options (if (special-selector? s)
                   options
                   (dissoc options :start))]
@@ -71,33 +71,43 @@
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
 (defn select
+  [item sel]
+  (cond
+   (= sel ::deref) @item
+   (= sel ::meta) (meta item)
+   (associative? item) (get item sel)
+   (set? item) (nth (seq item) sel)
+   (integer? sel) (nth item sel)))
+
+(defn select-in
   "Like get-in on steroids.
 
+   * basic get-in behavior, plus
    * uses nth to follow (in O(n) time!) lazy sequences.
-   * follows magic key mycroft.data/meta to metadata"
+   * follows magic key mycroft.data/meta to metadata
+   * follows mycroft.data/deref to indirect through reference"
   [item selectors]
-  (reduce
-   (fn [item sel]
-     (cond
-      (= sel ::deref) @item
-      (= sel ::meta) (meta item)
-      (associative? item) (get item sel)
-      (set? item) (nth (seq item) sel)
-      (integer? sel) (nth item sel)))
+  (reduce select
    item
    selectors))
+
+#_(defn selections-in
+  "Like select-in, but returns vector of the
+   intermediate steps."
+  [item selectors]
+  (vec (reductions select item selectors)))
 
 (defn render
   "Given a var and some options, render the var
    as html. Options:
 
-   :selector : vector is passed to select to drill in
+   :selectors : vector is passed to select to drill in
    :meta     : true to look at metadata instead of data
    :start    : start at the nth item
    :count    : how many items to show"
   [var options]
-  (let [selector (:selector options)
-        selection (select var selector)]
+  (let [selectors (:selectors options)
+        selection (select-in var selectors)]
     [:div
      (breadcrumb/render (.ns var) var options)
      [:div.buttons
@@ -188,7 +198,6 @@
     [:tbody
      ~@(map
         (fn [o]
-          (println o)
           (render-row-matching-headers o options))
         content)]])
 

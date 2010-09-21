@@ -60,8 +60,8 @@
    to data structures as needed."
   [options]
   (let [options (keywordize-keys options)
-        options (if (:selector options)
-                  (update-in options [:selector] read-string)
+        options (if (:selectors options)
+                  (update-in options [:selectors] read-string)
                   options)
         options (if (:start options)
                   (update-in options [:start] parse-start)

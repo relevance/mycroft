@@ -41,7 +41,7 @@
              (map (fn [partial-selector]
                     [:span
                      " &raquo; "
-                     [:a {:href (url {:selector partial-selector})}
+                     [:a {:href (url {:selectors partial-selector})}
                       (breadcrumb-text (last partial-selector)) ]])))
         [:span " &raquo; " (breadcrumb-text (last selector))]]))])
 
