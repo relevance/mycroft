@@ -12,6 +12,7 @@
    [mycroft.jmx :as jmx]
    [mycroft.resources :as resources]
    [mycroft.data :as data]
+   [mycroft.class :as class]
    [mycroft.namespace :as namespace]
    [mycroft.docs :as docs]
    [mycroft.history :as history]
@@ -48,12 +49,42 @@
                       "\n\tSession " (:session request)))
         response))))
 
+(defn parse-start
+  [x]
+  (try
+   (max (Integer/parseInt x) 0)
+   (catch NumberFormatException e nil)))
+
+(defn normalize-options
+  "Convert options from string form (as coming in from web)
+   to data structures as needed."
+  [options]
+  (let [options (keywordize-keys options)
+        options (if (:selector options)
+                  (update-in options [:selector] read-string)
+                  options)
+        options (if (:start options)
+                  (update-in options [:start] parse-start)
+                  options)
+        options (merge {:start 0} options)]
+    options))
+
+
 (defroutes namespace-routes
   (GET "/vars" []
        (html
         (minib-layout
          "Namespaces"
          (namespace/browser)))))
+
+(defroutes class-routes
+  (GET "/classes/*"
+       {:keys [params query-params]}
+       (let [classname (get params "*")]
+         (html
+          (minib-layout
+           classname
+           (class/render classname (normalize-options query-params)))))))
 
 (defroutes var-routes
   (GET
@@ -66,11 +97,12 @@
       (minib-layout
        qname
        (if var
-         (data/render (find-var (symbol qname)) (keywordize-keys query-params))
+         (data/render (find-var (symbol qname)) (normalize-options query-params))
          (namespace/var-browser ns)))))))
 
 (def dynamic-routes (routes (-> namespace-routes examples/with-recent-history)
-                            var-routes))
+                            var-routes
+                            class-routes))
 
 (defroutes static-routes
   (resources/resources "/" {:root "/public"})

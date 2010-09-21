@@ -10,10 +10,8 @@
   [:a {:href (str "/vars/" ns-name)} ns-name])
 
 (defn top-link
-  [ns]
-  (if ns
-    [:a {:href (str "/vars")} "top"]
-    "top"))
+  []
+  [:a {:href (str "/vars")} "top"])
 
 (defn var-link
   [ns-name var-name]
@@ -28,7 +26,7 @@
 (defn render
   [ns var {:keys [selector]}]
   [:div {:id "breadcrumb"}
-   (top-link ns)
+   (if ns (top-link) "ns")
    (when ns
      [:span " &laquo; "
       (if var (namespace-link ns) ns)])

@@ -2,7 +2,6 @@
   (:use clojure.pprint
         [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]
-            [mycroft.reflect :as reflect]
             [mycroft.breadcrumb :as breadcrumb]))
 
 (defn indexed
@@ -70,7 +69,7 @@
 
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
-(defn- select
+(defn select
   "Like get-in on steroids.
 
    * uses nth to follow (in O(n) time!) lazy sequences.
@@ -79,7 +78,6 @@
   (reduce
    (fn [item sel]
      (cond
-      (= sel ::reflect) (reflect/reflect item)
       (= sel ::deref) @item
       (= sel ::meta) (meta item)
       (associative? item) (get item sel)
@@ -87,25 +85,6 @@
       (integer? sel) (nth item sel)))
    item
    selectors))
-
-(defn parse-start
-  [x]
-  (try
-   (max (Integer/parseInt x) 0)
-   (catch NumberFormatException e nil)))
-
-(defn normalize-options
-  "Convert options from string form (as coming in from web)
-   to data structures as needed."
-  [options]
-  (let [options (if (:selector options)
-                  (update-in options [:selector] read-string)
-                  options)
-        options (if (:start options)
-                  (update-in options [:start] parse-start)
-                  options)
-        options (merge {:start 0} options)]
-    options))
 
 (defn render
   "Given a var and some options, render the var
@@ -116,19 +95,22 @@
    :start    : start at the nth item
    :count    : how many items to show"
   [var options]
-  (let [options (normalize-options options)
-        selector (:selector options)
-        selection (select var selector)]
+  (let [selector (:selector options)
+        selection (select var selector)
+        classname (.getName (class selection))]
     [:div
      (breadcrumb/render (.ns var) var options)
      [:div.buttons
-      (when (meta selection)
+      (if (meta selection)
         [:span
-         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]])
-      (when-let [doc-url (docs/doc-url selection)]
+         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]]
+        [:span.disabled-button "metadata"])
+      [:span
+       [:a {:href (str "/classes/" classname)} (str "class " classname)]]
+      (if-let [doc-url (docs/doc-url selection)]
         [:span
-         [:a {:href doc-url} "docs"]])
-      #_[:a {:href (breadcrumb/url (add-selector options ::reflect))} "reflect"]]
+         [:a {:href doc-url} "api docs"]]
+        [:span.disabled-button "api docs"])]
      (render-type selection options)]))
 
 (defn render-string
