@@ -1,4 +1,4 @@
-(defproject mycroft "0.0.1"
+(defproject mycroft "0.0.2"
   :description "It's your data"
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
