@@ -1,0 +1,47 @@
+Mycroft is an generic inspector for the JVM, written in Clojure. You
+can learn more about Mycroft by looking at the running instance at 
+http://inspector.clojure.org.
+
+h2. Installation
+
+Run Mycroft as a standalone project:
+
+* clone the git repos at http://github.com/relevance/mycroft
+* run @lein deps@ to get dependent libraries
+* run @script/repl@ to launch the web server
+
+Embed Mycroft in your own project:
+
+* in project.clj, add @[mycroft/mycroft "0.0.2"]@ to your
+  @:dev-dependencies@
+* run @lein deps@ to get libs
+* from the repl:
+** run @(use 'mycroft.main)@
+** launch mycroft on a port of your choice, e.g. @(run 8081)@
+
+View a live copy of Mycroft on the web at http://inspector.clojure.org.
+
+h2. Getting Started
+
+Once you have installed Mycroft per the instructions above, you can
+inspect items from the repl in a browser. Try:
+
+* @(inspect alter)@ to inspect a Clojure var
+* @(inspect java.lang.String)@ to inspect a Java class
+* @(inspect (+ 1 2))@ to inspect an arbitrary expression
+
+You can also try browsing to the following urls:
+
+* http://localhost:{yourport} gives an overview tour of Mycroft
+* http://localhost:{yourport}/vars is an entry point for browsing all Clojure vars
+
+h2. License and Copyright
+
+Copyright (c) Relevance. All rights reserved. The use and distribution
+terms for this software are covered by the Eclipse Public License 1.0
+(http://opensource.org/licenses/eclipse-1.0.php) which can be found in
+the file epl-v10.html at the root of this distribution. By using this
+software in any fashion, you are agreeing to be bound by the terms of
+this license. You must not remove this notice, or any other, from this software.
+
+

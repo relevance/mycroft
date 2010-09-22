@@ -1,7 +1,12 @@
 (ns mycroft.breadcrumb
   (:use [hiccup.page-helpers :only (encode-params)]))
 
-(defn url
+(defn options->query-string
+  "Generate query string for the options provided. Options include
+
+   :selectors                  vector of selectors for select-in
+   :start                      first item to show (for pagination)
+   :headers                    explicitly select table headers."
   [options]
   (str "?" (encode-params options)))
 
@@ -41,7 +46,7 @@
              (map (fn [partial-selector]
                     [:span
                      " &raquo; "
-                     [:a {:href (url {:selectors partial-selector})}
+                     [:a {:href (options->query-string {:selectors partial-selector})}
                       (breadcrumb-text (last partial-selector)) ]])))
         [:span " &raquo; " (breadcrumb-text (last selector))]]))])
 

@@ -14,11 +14,16 @@
   (map vector (iterate inc 0) s))
 
 (defn special-selector?
+  "Keywords in the mycroft.data namespace are interpreted specially,
+   instead of just drilling further into the collection by index or
+   key."
   [selector]
   (and (keyword? selector)
        (= (namespace selector) "mycroft.data")))
 
 (defn add-selector
+  "Update the options by adding a selector to the end of the
+   selectors already included."
   [options s]
   (let [options (if (:selectors options)
                   (update-in options [:selectors] conj s)
@@ -26,7 +31,7 @@
         options (if (special-selector? s)
                   options
                   (dissoc options :start))]
-    options))
+    (dissoc options :headers)))
 
 (declare render-collection render-string)
 
@@ -42,6 +47,7 @@
    (catch IllegalStateException e e)))
 
 (defn tag
+  "Like class, but partitions all arrays under the keyword :Array."
   [t]
   (cond
    (nil? t) nil
@@ -102,7 +108,6 @@
    as html. Options:
 
    :selectors : vector is passed to select to drill in
-   :meta     : true to look at metadata instead of data
    :start    : start at the nth item
    :count    : how many items to show"
   [var options]
@@ -113,7 +118,7 @@
      [:div.buttons
       (if (meta selection)
         [:span
-         [:a {:href (breadcrumb/url (add-selector options ::meta))} "metadata"]]
+         [:a {:href (breadcrumb/options->query-string (add-selector options ::meta))} "metadata"]]
         [:span.disabled-button "metadata"])
       (if-let [classname (.?. selection getClass getName)]
         [:span
@@ -130,6 +135,8 @@
   [:pre (escape-html (str content))])
 
 (defn abbreviate
+  "Render the item with print settings so only part of the
+   item is shown."
   [item]
   (binding [*print-length* 5
             *print-level* 2]
@@ -148,7 +155,7 @@
   [row options]
   {:pre (= 2 (count row))}
   `[:tr
-    ~(render-cell (first row) {:href (breadcrumb/url (add-selector options (first row)))})
+    ~(render-cell (first row) {:href (breadcrumb/options->query-string (add-selector options (first row)))})
     ~@(map render-cell (rest row))])
 
 (defn render-row-matching-headers
@@ -156,7 +163,7 @@
   {:pre [(= 2 (count row))
          (associative? obj)]}
   `[:tr
-    ~(render-cell key {:href (breadcrumb/url (add-selector options key))})
+    ~(render-cell key {:href (breadcrumb/options->query-string (add-selector options key))})
     ~@(let [explicit-columns (map obj headers)]
         (map render-cell explicit-columns))
     ~(let [rest-of-object (apply dissoc obj headers)]
@@ -178,14 +185,14 @@
             (> count items-per-page))
     [:div.buttons {:id "pagination"}
      (if (> start 0)
-       [:a {:href (breadcrumb/url (update-in options [:start] - items-per-page))}
+       [:a {:href (breadcrumb/options->query-string (update-in options [:start] - items-per-page))}
         "prev"]
        [:span.disabled-button "prev"])
      (when count
        [:span
         (str "Items " start "-" (min count (+ start items-per-page)) " of " count)])
      (if has-more?
-       [:a {:href (breadcrumb/url (update-in options [:start] + 0 items-per-page))}
+       [:a {:href (breadcrumb/options->query-string (update-in options [:start] + 0 items-per-page))}
         "next"]
        [:span.disabled-button "next"])]))
 
