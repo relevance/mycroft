@@ -1,5 +1,6 @@
 (ns mycroft.data
   (:use clojure.pprint
+        mycroft.selector
         [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]
             [mycroft.breadcrumb :as breadcrumb]))
@@ -11,26 +12,6 @@
   (indexed '(a b c d))  =>  ([0 a] [1 b] [2 c] [3 d])"
   [s]
   (map vector (iterate inc 0) s))
-
-(defn special-selector?
-  "Keywords in the mycroft.data namespace are interpreted specially,
-   instead of just drilling further into the collection by index or
-   key."
-  [selector]
-  (and (keyword? selector)
-       (= (namespace selector) "mycroft.data")))
-
-(defn add-selector
-  "Update the options by adding a selector to the end of the 
-   selectors already included."
-  [options s]
-  (let [options (if (:selectors options)
-                  (update-in options [:selectors] conj s)
-                  (assoc options :selectors [s]))
-        options (if (special-selector? s)
-                  options
-                  (dissoc options :start))]
-    (dissoc options :headers)))
 
 (declare render-collection render-string)
 
@@ -75,33 +56,6 @@
 
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
 
-(defn select
-  [item sel]
-  (cond
-   (= sel ::deref) @item
-   (= sel ::meta) (meta item)
-   (associative? item) (get item sel)
-   (set? item) (nth (seq item) sel)
-   (integer? sel) (nth item sel)))
-
-(defn select-in
-  "Like get-in on steroids.
-
-   * basic get-in behavior, plus
-   * uses nth to follow (in O(n) time!) lazy sequences.
-   * follows magic key mycroft.data/meta to metadata
-   * follows mycroft.data/deref to indirect through reference"
-  [item selectors]
-  (reduce select
-   item
-   selectors))
-
-#_(defn selections-in
-  "Like select-in, but returns vector of the
-   intermediate steps."
-  [item selectors]
-  (vec (reductions select item selectors)))
-
 (defn render
   "Given a var and some options, render the var
    as html. Options:
@@ -113,19 +67,7 @@
   (let [selectors (:selectors options)
         selection (select-in var selectors)]
     [:div
-     (breadcrumb/render (.ns var) var options)
-     [:div.buttons
-      (if (meta selection)
-        [:span
-         [:a {:href (str "?" (breadcrumb/options->query-string (add-selector options ::meta)))} "metadata"]]
-        [:span.disabled-button "metadata"])
-      (if-let [class (.getClass selection)]
-        [:span (breadcrumb/link-to class)]
-        [:span.disabled-button "no class"])
-      (if-let [doc-url (docs/doc-url selection)]
-        [:span
-         [:a {:href doc-url} "api docs"]]
-        [:span.disabled-button "api docs"])]
+     (breadcrumb/render var options selection)
      (render-type selection options)]))
 
 (defn render-string

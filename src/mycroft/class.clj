@@ -1,19 +1,17 @@
 (ns mycroft.class
-  (:use [mycroft.data :only (select-in render-type)])
+  (:use [mycroft.data :only (render-type)]
+        mycroft.selector)
   (:require [mycroft.reflect :as reflect]
             [mycroft.breadcrumb :as breadcrumb]))
 
 (defn render
-  [classname options]
-  (let [cls (Class/forName classname)
+  [classname options selection]
+  (let [cls (when classname (Class/forName classname))
         obj (reflect/members cls)
-        selectors (:selectors options)
-        selection (select-in obj selectors)]
+        selectors (:selectors options)]
     [:div
      [:div {:id "breadcrumb"}
-      (breadcrumb/top-link)
-      [:span " &laquo; "
-       (str "class " classname)]]
+      (breadcrumb/render cls options)]
      [:div
       (render-type {:superclasses (supers cls)}
                    {})]

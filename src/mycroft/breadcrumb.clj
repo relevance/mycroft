@@ -1,6 +1,8 @@
 (ns mycroft.breadcrumb
-  (:use [hiccup.page-helpers :only (encode-params)]
-        [hiccup.core :only (escape-html)]))
+  (:use mycroft.selector
+        [hiccup.page-helpers :only (encode-params)]
+        [hiccup.core :only (escape-html)])
+  (:require [mycroft.docs :as docs]))
 
 (defn options->query-string
   "Generate query string for the options provided. Options include
@@ -63,24 +65,41 @@
   (get {:mycroft.data/deref "@" :mycroft.data/meta "&lt;meta&gt;"} selector-component selector-component))
 
 (defn render
-  [ns var {:keys [selectors]}]
-  [:div {:id "breadcrumb"}
-   (if ns (top-link) "top")
-   (when ns
-     [:span " &laquo; "
-      (if var (link-to ns) ns)])
-   (when var
-     [:span "&nbsp;/&nbsp;"
-      (if selectors (link-to var) (link-name var))])
+  [item options selection]
+  (let [ns (when (var? item) (.ns item))
+        var (when (var? item) item)
+        classname (when (class? item) (.getName item))
+        selectors (:selectors options)]
+    [:div
+     [:div {:id "breadcrumb"}
+      (if ns (top-link) "top")
+      (when ns
+        [:span " &laquo; "
+         (if var (link-to ns) ns)])
+      (when classname
+        [:span " &laquo; "
+         (str "class " classname)])
+      (when var
+        [:span "&nbsp;/&nbsp;"
+         (if selectors (link-to var) (link-name var))])
 
-   (when selectors
-     (let [first-crumb (if (= ::deref (first selectors)) 2 1)]
-       [:span
-        (->> (map (fn [n] (subvec selectors 0 n)) (range first-crumb (count selectors)))
-             (map (fn [partial-selectors]
-                    [:span
-                     " &raquo; "
-                     [:a {:href (str "?" (options->query-string {:selectors partial-selectors}))}
-                      (breadcrumb-text (last partial-selectors)) ]])))
-        [:span " &raquo; " (breadcrumb-text (last selectors))]]))])
+      (when selectors
+        (let [first-crumb (if (= ::deref (first selectors)) 2 1)]
+          [:span
+           (->> (map (fn [n] (subvec selectors 0 n)) (range first-crumb (count selectors)))
+                (map (fn [partial-selectors]
+                       [:span
+                        " &raquo; "
+                        [:a {:href (str "?" (options->query-string {:selectors partial-selectors}))}
+                         (breadcrumb-text (last partial-selectors)) ]])))
+           [:span " &raquo; " (breadcrumb-text (last selectors))]]))]
+     [:div#options
+      (when (meta selection)
+        [:span
+         [:a {:href (str "?" (options->query-string (add-selector options ::meta)))} "metadata"]])
+      (when-let [class (and selection (.getClass selection))]
+        [:span (link-to class)])
+      (when-let [doc-url (docs/doc-url selection)]
+        [:span
+         [:a {:href doc-url} "api docs"]])]]))
 
