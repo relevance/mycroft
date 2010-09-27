@@ -68,11 +68,11 @@
 (defn constructor->map
   [^java.lang.reflect.Constructor constructor]
   (Constructor.
-    (.getName constructor)
-    (.getDeclaringClass constructor)
-    (vec (.getParameterTypes constructor))
-    (vec (.getExceptionTypes constructor))
-    (modifiers->set (.getModifiers constructor))))
+   (symbol (.getName constructor))
+   (.getDeclaringClass constructor)
+   (vec (.getParameterTypes constructor))
+   (vec (.getExceptionTypes constructor))
+   (modifiers->set (.getModifiers constructor))))
 
 (defn declared-constructors
   "Return a set of the declared constructors of class as a Clojure map."
@@ -95,12 +95,12 @@
 (defn method->map
   [^java.lang.reflect.Method method]
   (Method.
-    (.getName method)
-    (.getReturnType method)
-    (.getDeclaringClass method)
-    (vec (.getParameterTypes method))
-    (vec (.getExceptionTypes method))
-    (modifiers->set (.getModifiers method))))
+   (symbol (.getName method))
+   (.getReturnType method)
+   (.getDeclaringClass method)
+   (vec (.getParameterTypes method))
+   (vec (.getExceptionTypes method))
+   (modifiers->set (.getModifiers method))))
 
 (defn declared-methods
   "Return a set of the declared constructors of class as a Clojure map."
@@ -123,10 +123,10 @@
 (defn field->map
   [^java.lang.reflect.Field field]
   (Field.
-    (.getName field)
-    (.getType field)
-    (.getDeclaringClass field)
-    (modifiers->set (.getModifiers field))))
+   (symbol (.getName field))
+   (.getType field)
+   (.getDeclaringClass field)
+   (modifiers->set (.getModifiers field))))
 
 (defn declared-fields
   "Return a set of the declared fields of class as a Clojure map."
