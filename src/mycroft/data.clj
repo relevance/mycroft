@@ -118,7 +118,7 @@
      [:div.buttons
       (if (meta selection)
         [:span
-         [:a {:href (breadcrumb/options->query-string (add-selector options ::meta))} "metadata"]]
+         [:a {:href (str "?" (breadcrumb/options->query-string (add-selector options ::meta)))} "metadata"]]
         [:span.disabled-button "metadata"])
       (if-let [classname (.?. selection getClass getName)]
         [:span
@@ -140,7 +140,7 @@
   [item]
   (binding [*print-length* 5
             *print-level* 2]
-    (str item)))
+    (with-out-str (pr item))))
 
 (defn render-cell
   ([content] (render-cell content nil))
@@ -155,7 +155,7 @@
   [row options]
   {:pre (= 2 (count row))}
   `[:tr
-    ~(render-cell (first row) {:href (breadcrumb/options->query-string (add-selector options (first row)))})
+    ~(render-cell (first row) {:href (str "?" (breadcrumb/options->query-string (add-selector options (first row))))})
     ~@(map render-cell (rest row))])
 
 (defn render-row-matching-headers
@@ -163,8 +163,8 @@
   {:pre [(= 2 (count row))
          (associative? obj)]}
   `[:tr
-    ~(render-cell key {:href (breadcrumb/options->query-string (add-selector options key))})
-    ~@(let [explicit-columns (map obj headers)]
+    ~(render-cell key {:href (str "?" (breadcrumb/options->query-string (add-selector options key)))})
+    ~@(let [explicit-columns (map #(% obj) headers)]
         (map render-cell explicit-columns))
     ~(let [rest-of-object (apply dissoc obj headers)]
         (render-cell rest-of-object))])
@@ -185,14 +185,14 @@
             (> count items-per-page))
     [:div.buttons {:id "pagination"}
      (if (> start 0)
-       [:a {:href (breadcrumb/options->query-string (update-in options [:start] - items-per-page))}
+       [:a {:href (str "?" (breadcrumb/options->query-string (update-in options [:start] - items-per-page)))}
         "prev"]
        [:span.disabled-button "prev"])
      (when count
        [:span
         (str "Items " start "-" (min count (+ start items-per-page)) " of " count)])
      (if has-more?
-       [:a {:href (breadcrumb/options->query-string (update-in options [:start] + 0 items-per-page))}
+       [:a {:href (str "?" (breadcrumb/options->query-string (update-in options [:start] + 0 items-per-page)))}
         "next"]
        [:span.disabled-button "next"])]))
 
@@ -210,6 +210,7 @@
 
 (defn render-table
   [content {:keys [headers] :as options}]
+  (println "options are " options)
   (if (seq content)
     (if headers
       (render-table-with-headers content options)

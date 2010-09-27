@@ -8,7 +8,7 @@
    :start                      first item to show (for pagination)
    :headers                    explicitly select table headers."
   [options]
-  (str "?" (encode-params options)))
+  (encode-params options))
 
 (defn namespace-link
   [ns-name]
@@ -46,7 +46,7 @@
              (map (fn [partial-selector]
                     [:span
                      " &raquo; "
-                     [:a {:href (options->query-string {:selectors partial-selector})}
+                     [:a {:href (str "?" (options->query-string {:selectors partial-selector}))}
                       (breadcrumb-text (last partial-selector)) ]])))
         [:span " &raquo; " (breadcrumb-text (last selector))]]))])
 

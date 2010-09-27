@@ -17,15 +17,15 @@
    inspect anything, including vars, classes, and arbitrary
    expressions. A history of past things you have inspected is
    at /vars/mycroft.history/history."
-  [o]
-  (if inspector
-    (if (symbol? o)
-      (if-let [resolved (ns-resolve *ns* o)]
-        `(.inspect inspector ~resolved)
-        `(.inspect inspector '~o))
-      `(.inspect inspector ~o))
-    
-    "Launch the inspector with (mycroft.main/run port) first!"))
+  [o & options]
+  (let [options (apply hash-map options)]
+    (if inspector
+      (if (symbol? o)
+        (if-let [resolved (ns-resolve *ns* o)]
+          `(.inspect inspector ~resolved ~options)
+          `(.inspect inspector '~o ~options))
+        `(.inspect inspector ~o ~options))
+      "Launch the inspector with (mycroft.main/run port) first!")))
 
 
 

@@ -10,6 +10,7 @@
   (:require
    [compojure.route :as route]
    [mycroft.jmx :as jmx]
+   [mycroft.breadcrumb :as breadcrumb]
    [mycroft.resources :as resources]
    [mycroft.data :as data]
    [mycroft.class :as class]
@@ -49,26 +50,14 @@
                       "\n\tSession " (:session request)))
         response))))
 
-(defn parse-start
-  [x]
-  (try
-   (max (Integer/parseInt x) 0)
-   (catch NumberFormatException e nil)))
-
 (defn normalize-options
   "Convert options from string form (as coming in from web)
    to data structures as needed."
   [options]
-  (let [options (keywordize-keys options)
-        options (if (:selectors options)
-                  (update-in options [:selectors] read-string)
-                  options)
-        options (if (:start options)
-                  (update-in options [:start] parse-start)
-                  options)
-        options (merge {:start 0} options)]
-    options))
-
+  (-> (keywordize-keys options)
+      (update-in [:selectors] (fnil read-string "nil"))
+      (update-in [:headers] (fnil read-string "nil"))
+      (update-in [:start] (fnil read-string "0"))))
 
 (defroutes namespace-routes
   (GET "/vars" []
@@ -115,16 +104,19 @@
 
 (defprotocol Inspector
   (launch [_])
-  (inspect [_ obj]))
+  (inspect [_ obj options]))
 
 (defrecord Instance [port]
   Inspector
   (launch [_]
           (run-jetty (var app) {:port port
                                 :join? false}))
-  (inspect [_ obj]
-           (if (class? obj)
-             (browse-url (str "http://localhost:" port
-                              "/classes/" (.getName obj)))
-             (browse-url (str "http://localhost:" port
-                              (history/add obj))))))
+  (inspect [_ obj options]
+           (let [query (breadcrumb/options->query-string options)]
+             (if (class? obj)
+               (browse-url (str "http://localhost:" port
+                                "/classes/" (.getName obj) "?"
+                                query))
+               (browse-url (str "http://localhost:" port
+                                (history/add obj) "&"
+                                query))))))

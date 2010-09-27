@@ -6,7 +6,7 @@
 (defn add
   "Add an object to history, returning its URL."
   [obj]
-  (str "/vars/mycroft.history/history"
+  (str "/vars/mycroft.history/history?"
        (breadcrumb/options->query-string {:selectors [:mycroft.data/deref :mycroft.data/deref (dec (count (swap! history conj obj)))]})))
 
 
