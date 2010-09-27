@@ -7,15 +7,16 @@
 (defn render
   [cls options selection]
   (let [obj (reflect/members cls)
-        selectors (:selectors options)]
+        selectors (:selectors options)
+        selection (select-in obj selectors)]
     [:div
      [:div {:id "breadcrumb"}
-      (breadcrumb/render cls options cls)]
+      (breadcrumb/render cls options selection)]
      [:div
       (render-type {:superclasses (supers cls)}
                    {})]
      [:div
-      (render-type obj
+      (render-type selection
                    (if selectors
                      options
                      (assoc options :headers

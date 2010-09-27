@@ -78,7 +78,7 @@
          (if var (link-to ns) ns)])
       (when classname
         [:span " &laquo; "
-         (str "class " classname)])
+         (if selectors (link-to item) (link-name item))])
       (when var
         [:span "&nbsp;/&nbsp;"
          (if selectors (link-to var) (link-name var))])
