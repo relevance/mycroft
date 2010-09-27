@@ -84,7 +84,7 @@
          (if selectors (link-to var) (link-name var))])
 
       (when selectors
-        (let [first-crumb (if (= ::deref (first selectors)) 2 1)]
+        (let [first-crumb (if (= :mycroft/deref (first selectors)) 2 1)]
           [:span
            (->> (map (fn [n] (subvec selectors 0 n)) (range first-crumb (count selectors)))
                 (map (fn [partial-selectors]
