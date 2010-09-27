@@ -22,7 +22,7 @@
        (= (namespace selector) "mycroft.data")))
 
 (defn add-selector
-  "Update the options by adding a selector to the end of the
+  "Update the options by adding a selector to the end of the 
    selectors already included."
   [options s]
   (let [options (if (:selectors options)
@@ -210,7 +210,6 @@
 
 (defn render-table
   [content {:keys [headers] :as options}]
-  (println "options are " options)
   (if (seq content)
     (if headers
       (render-table-with-headers content options)

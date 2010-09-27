@@ -29,7 +29,7 @@
   (get {:mycroft.data/deref "@" :mycroft.data/meta "&lt;meta&gt;"} selector-component selector-component))
 
 (defn render
-  [ns var {:keys [selector]}]
+  [ns var {:keys [selectors]}]
   [:div {:id "breadcrumb"}
    (if ns (top-link) "ns")
    (when ns
@@ -37,16 +37,16 @@
       (if var (namespace-link ns) ns)])
    (when var
      [:span "&nbsp;/&nbsp;"
-      (if selector (var-link (.ns var) (.sym var)) (.sym var))])
+      (if selectors (var-link (.ns var) (.sym var)) (.sym var))])
 
-   (when selector
-     (let [first-crumb (if (= ::deref (first selector)) 2 1)]
+   (when selectors
+     (let [first-crumb (if (= ::deref (first selectors)) 2 1)]
        [:span
-        (->> (map (fn [n] (subvec selector 0 n)) (range first-crumb (count selector)))
-             (map (fn [partial-selector]
+        (->> (map (fn [n] (subvec selectors 0 n)) (range first-crumb (count selectors)))
+             (map (fn [partial-selectors]
                     [:span
                      " &raquo; "
-                     [:a {:href (str "?" (options->query-string {:selectors partial-selector}))}
-                      (breadcrumb-text (last partial-selector)) ]])))
-        [:span " &raquo; " (breadcrumb-text (last selector))]]))])
+                     [:a {:href (str "?" (options->query-string {:selectors partial-selectors}))}
+                      (breadcrumb-text (last partial-selectors)) ]])))
+        [:span " &raquo; " (breadcrumb-text (last selectors))]]))])
 
