@@ -46,11 +46,11 @@
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
   (render-collection this options))
 (defmethod render-type clojure.lang.IRef [this options]
-  (render-type @this (add-selector options ::deref)))
+  (render-type @this (add-selector options :mycroft/deref)))
 (defmethod render-type clojure.lang.Var [this options]
   (if (fn? (safe-deref this))
     (docs/render this options)
-    (render-type (safe-deref this) (add-selector options ::deref))))
+    (render-type (safe-deref this) (add-selector options :mycroft/deref))))
 (defmethod render-type :default [this options]
   (render-string this options))
 

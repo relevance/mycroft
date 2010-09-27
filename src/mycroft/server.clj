@@ -78,11 +78,12 @@
 (defroutes class-routes
   (GET "/classes/*"
        {:keys [params query-params]}
-       (let [classname (get params "*")]
+       (let [classname (get params "*")
+             cls (Class/forName classname)]
          (html
           (minib-layout
            classname
-           (class/render classname (normalize-options query-params)))))))
+           (class/render cls (normalize-options query-params) cls))))))
 
 (defroutes var-routes
   (GET

@@ -1,12 +1,12 @@
 (ns mycroft.selector)
 
 (defn special-selector?
-  "Keywords in the mycroft.data namespace are interpreted specially,
+  "Keywords in the mycroft namespace are interpreted specially,
    instead of just drilling further into the collection by index or
    key."
   [selector]
   (and (keyword? selector)
-       (= (namespace selector) "mycroft.data")))
+       (= (namespace selector) "mycroft")))
 
 (defn add-selector
   "Update the options by adding a selector to the end of the 
@@ -23,8 +23,8 @@
 (defn select
   [item sel]
   (cond
-   (= sel ::deref) @item
-   (= sel ::meta) (meta item)
+   (= sel :mycroft/deref) @item
+   (= sel :mycroft/meta) (meta item)
    (associative? item) (get item sel)
    (set? item) (nth (seq item) sel)
    (integer? sel) (nth item sel)))
@@ -34,8 +34,8 @@
 
    * basic get-in behavior, plus
    * uses nth to follow (in O(n) time!) lazy sequences.
-   * follows magic key mycroft.data/meta to metadata
-   * follows mycroft.data/deref to indirect through reference"
+   * follows magic key mycroft./meta to metadata
+   * follows mycroft./deref to indirect through reference"
   [item selectors]
   (reduce select
    item

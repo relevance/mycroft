@@ -5,18 +5,17 @@
             [mycroft.breadcrumb :as breadcrumb]))
 
 (defn render
-  [classname options selection]
-  (let [cls (when classname (Class/forName classname))
-        obj (reflect/members cls)
+  [cls options selection]
+  (let [obj (reflect/members cls)
         selectors (:selectors options)]
     [:div
      [:div {:id "breadcrumb"}
-      (breadcrumb/render cls options)]
+      (breadcrumb/render cls options cls)]
      [:div
       (render-type {:superclasses (supers cls)}
                    {})]
      [:div
-      (render-type selection
+      (render-type obj
                    (if selectors
                      options
                      (assoc options :headers

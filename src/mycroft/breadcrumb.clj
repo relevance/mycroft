@@ -62,7 +62,7 @@
   "Convert the internal names for meta and deref into user-friendly terms,
    everything else renders unchanged."
   [selector-component]
-  (get {:mycroft.data/deref "@" :mycroft.data/meta "&lt;meta&gt;"} selector-component selector-component))
+  (get {:mycroft/deref "@" :mycroft/meta "&lt;meta&gt;"} selector-component selector-component))
 
 (defn render
   [item options selection]
