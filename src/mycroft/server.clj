@@ -50,14 +50,23 @@
                       "\n\tSession " (:session request)))
         response))))
 
+(defn read-param-string
+  "Use Clojure reader to read a param strings, or return
+   default is param string empty/nil."
+  ([s] (read-param-string s nil))
+  ([s default]
+     (if (seq s)
+       (read-string s)
+       default)))
+
 (defn normalize-options
   "Convert options from string form (as coming in from web)
    to data structures as needed."
   [options]
   (-> (keywordize-keys options)
-      (update-in [:selectors] (fnil read-string "nil"))
-      (update-in [:headers] (fnil read-string "nil"))
-      (update-in [:start] (fnil read-string "0"))))
+      (update-in [:selectors] read-param-string)
+      (update-in [:headers] read-param-string)
+      (update-in [:start] read-param-string 0)))
 
 (defroutes namespace-routes
   (GET "/vars" []

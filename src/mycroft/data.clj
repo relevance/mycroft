@@ -1,7 +1,6 @@
 (ns mycroft.data
   (:use clojure.pprint
-        [hiccup.core :only (escape-html)]
-        [clojure.contrib.core :only (.?.)])
+        [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]
             [mycroft.breadcrumb :as breadcrumb]))
 
@@ -120,9 +119,8 @@
         [:span
          [:a {:href (str "?" (breadcrumb/options->query-string (add-selector options ::meta)))} "metadata"]]
         [:span.disabled-button "metadata"])
-      (if-let [classname (.?. selection getClass getName)]
-        [:span
-         [:a {:href (str "/classes/" classname)} (str "class " classname)]]
+      (if-let [class (.getClass selection)]
+        [:span (breadcrumb/link-to class)]
         [:span.disabled-button "no class"])
       (if-let [doc-url (docs/doc-url selection)]
         [:span

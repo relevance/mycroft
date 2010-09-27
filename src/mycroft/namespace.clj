@@ -1,29 +1,28 @@
 (ns mycroft.namespace
   (:require [mycroft.breadcrumb :as breadcrumb]))
 
-(defn- namespace-names
-  "Sorted list of namespace names (strings)."
+(defn namespaces
+  "Sorted list of namespaces"
   []
   (->> (all-ns)
-       (map #(.name %))
-       (sort)))
+       (sort-by #(.name %))))
 
-(defn- var-names
+(defn vars
   "Sorted list of var names in a namespace (symbols)."
   [ns]
   (when-let [ns (find-ns (symbol ns))]
-    (sort (keys (ns-publics ns)))))
+    (sort-by #(str (.sym %)) (vals (ns-publics ns)))))
 
 (defn browser
-  ([] (browser (namespace-names)))
-  ([ns-names]
+  ([] (browser (namespaces)))
+  ([nses]
      [:div
       [:div
        (breadcrumb/render nil nil nil)]
       [:ul
        (map
-        (fn [ns] [:li (breadcrumb/namespace-link ns)])
-        ns-names)]]))
+        (fn [ns] [:li (breadcrumb/link-to ns)])
+        nses)]]))
 
 (defn safe-load-ns
   [ns]
@@ -37,8 +36,8 @@
    (breadcrumb/render ns nil nil)
    [:ul
     (map
-     (fn [var] [:li (breadcrumb/var-link ns var)])
-     (var-names ns))]])
+     (fn [var] [:li (breadcrumb/link-to var)])
+     (vars ns))]])
 
 
 
