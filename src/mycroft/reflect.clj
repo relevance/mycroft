@@ -19,21 +19,21 @@
                 (when (Modifier/isTransient mod) :transient)
                 (when (Modifier/isVolatile mod) :volatile)])))
 
-(defn modifier-predicate
+(defn attribute-predicate
   [sym]
   `(defn ~(symbol (str sym "?"))
-     ~(str "Does the :modifiers of o include :" sym " ?")
+     ~(str "Does the :attributes of o include :" sym " ?")
      [~'o]
-     ((:modifiers ~'o) ~(keyword sym))))
+     ((:attributes ~'o) ~(keyword sym))))
 
-(defmacro modifier-predicates
-  [& modifiers]
+(defmacro attribute-predicates
+  [& attributes]
   `(do
      ~@(map
-        modifier-predicate
-        modifiers)))
+        attribute-predicate
+        attributes)))
 
-(modifier-predicates abstract final interface native private
+(attribute-predicates abstract final interface native private
                      protected public static strict synchronized
                      transient volatile)
 
@@ -55,7 +55,7 @@
   (str "(" (str/join ", " (map format-member (:parameter-types m))) ")"))
 
 (defrecord Constructor
-  [name declaring-class parameter-types exceptions modifiers]
+  [name declaring-class parameter-types exceptions attributes]
   ReplFormat
   (format-member [c]
                (str "<init> " (param-str c))))
@@ -82,7 +82,7 @@
         (.getDeclaredConstructors cls))))
 
 (defrecord Method
-  [name return-type declaring-class parameter-types exception-types modifiers]
+  [name return-type declaring-class parameter-types exception-types attributes]
   ReplFormat
   (format-member [c]
                (str (format-member (:return-type c)) " " (:name c) (param-str c))))
@@ -110,7 +110,7 @@
         (.getDeclaredMethods cls))))
 
 (defrecord Field
-  [name type declaring-class modifiers]
+  [name type declaring-class attributes]
   ReplFormat
   (format-member [c]
                (str (format-member (:type c)) " " (:name c))))
@@ -127,6 +127,20 @@
    (.getType field)
    (.getDeclaringClass field)
    (modifiers->set (.getModifiers field))))
+
+(defn attributes
+  [cls]
+  (into #{}
+        (remove nil?
+                [(when (.isAnnotation cls) :annotation)
+                 (when (.isAnonymousClass cls) :anonymous)
+                 (when (.isArray cls) :array)
+                 (when (.isEnum cls) :enum)
+                 (when (.isInterface cls) :interface)
+                 (when (.isLocalClass cls) :local)
+                 (when (.isMemberClass cls) :member)
+                 (when (.isPrimitive cls) :primitive)
+                 (when (.isSynthetic cls) :synthetic)])))
 
 (defn declared-fields
   "Return a set of the declared fields of class as a Clojure map."
@@ -148,6 +162,7 @@
       (let [supers (supers o)
             classes (conj supers o)]
         {:supers supers
+         :attributes (attributes o)
          :fields (into #{} (mapcat declared-fields classes))
          :methods (into #{} (mapcat declared-methods classes))
          :constructors (into #{} (mapcat declared-constructors classes))})
@@ -221,7 +236,7 @@
        (if (seq ms#)
          (doseq [m# ms#]
            (println (str/join " "
-                              [(str/join " " (map name (:modifiers m#)))
+                              [(str/join " " (map name (:attributes m#)))
                                (format-member m#)])))
          (println "No matches.")))
      (println sep#)))
