@@ -118,8 +118,8 @@
   [^java.lang.reflect.Field field]
   (Field.
    (symbol (.getName field))
-   (map classname (.getType field))
-   (map classname (.getDeclaringClass field))
+   (classname (.getType field))
+   (classname (.getDeclaringClass field))
    (parse-flags (.getModifiers field) :field)))
 
 (defn declared-fields
@@ -148,7 +148,13 @@
 
 (defn descriptor->classname
   [d]
+  {:pre [(string? d)]}
   (classname (Type/getType d)))
+
+(defn internal-name->classname
+  [d]
+  {:pre [(string? d)]}
+  (classname (Type/getObjectType d)))
 
 (def add-to-set (fnil conj #{}))
 
@@ -182,21 +188,22 @@
                                  (parse-flags access :field)))
                   nil)
       (visitMethod [_ access name desc signature exceptions]
-                   (swap! result update-in [:methods] add-to-set
-                          (let [{:keys [parameter-types return-type]} (parse-method-descriptor desc)
-                                attributes (parse-flags access :method)]
-                            (if (= name "<init>")
-                              (Constructor. (symbol name)
-                                            classname
-                                            parameter-types
-                                            nil
-                                            attributes)
-                              (Method. (symbol name)
-                                       return-type
-                                       classname
-                                       parameter-types
-                                       nil
-                                       attributes))))
+                   (let [constructor? (= name "<init>")]
+                     (swap! result update-in [(if constructor? :constructors :methods)] add-to-set
+                            (let [{:keys [parameter-types return-type]} (parse-method-descriptor desc)
+                                  attributes (parse-flags access :method)]
+                              (if constructor?
+                                (Constructor. classname
+                                              classname
+                                              parameter-types
+                                              (vec (map internal-name->classname exceptions))
+                                              attributes)
+                                (Method. (symbol name)
+                                         return-type
+                                         classname
+                                         parameter-types
+                                         (vec (map internal-name->classname exceptions))
+                                         attributes)))))
                    nil)
       (visitEnd [_])
       ) 0)
