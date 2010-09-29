@@ -19,35 +19,43 @@
    (-> (.getClassName t)
        (symbol))))
 
-(defn modifiers->set
-  [mod]
-  (set (remove nil?
-               [(when (Modifier/isAbstract mod) :abstract)
-                (when (Modifier/isFinal mod) :final)
-                (when (Modifier/isInterface mod) :interface)
-                (when (Modifier/isNative mod) :native)
-                (when (Modifier/isPrivate mod) :private)
-                (when (Modifier/isProtected mod) :protected)
-                (when (Modifier/isPublic mod) :public)
-                (when (Modifier/isStatic mod) :static)
-                (when (Modifier/isStrict mod) :strict)
-                (when (Modifier/isSynchronized mod) :synchronized)
-                (when (Modifier/isTransient mod) :transient)
-                (when (Modifier/isVolatile mod) :volatile)])))
+(defn access-flag
+  [[name flag & contexts]]
+  {:name name :flag flag :contexts (set (map keyword contexts))})
 
-(defn attributes
-  [cls]
-  (into #{}
-        (remove nil?
-                [(when (.isAnnotation cls) :annotation)
-                 (when (.isAnonymousClass cls) :anonymous)
-                 (when (.isArray cls) :array)
-                 (when (.isEnum cls) :enum)
-                 (when (.isInterface cls) :interface)
-                 (when (.isLocalClass cls) :local)
-                 (when (.isMemberClass cls) :member)
-                 (when (.isPrimitive cls) :primitive)
-                 (when (.isSynthetic cls) :synthetic)])))
+(def flag-descriptors
+  (vec
+   (map access-flag
+        [[:ACC_PUBLIC 0x0001 :class :field ::method]
+         [:ACC_PRIVATE 0x002 :class :field ::method]
+         [:ACC_PRIVATE 0x0002  :class :field :method]
+         [:ACC_PROTECTED 0x0004  :class :field :method]
+         [:ACC_STATIC 0x0008  :field :method]
+         [:ACC_FINAL 0x0010  :class :field :method]
+         [:ACC_SUPER 0x0020  :class]
+         [:ACC_SYNCHRONIZED 0x0020  :method]
+         [:ACC_VOLATILE 0x0040  :field]
+         [:ACC_BRIDGE 0x0040  :method]
+         [:ACC_VARARGS 0x0080  :method]
+         [:ACC_TRANSIENT 0x0080  :field]
+         [:ACC_NATIVE 0x0100  :method]
+         [:ACC_INTERFACE 0x0200  :class]
+         [:ACC_ABSTRACT 0x0400  :class :method]
+         [:ACC_STRICT 0x0800  :method]
+         [:ACC_SYNTHETIC 0x1000  :class :field :method]
+         [:ACC_ANNOTATION 0x2000  :class]
+         [:ACC_ENUM 0x4000  :class :field :inner]])))
+
+(defn parse-flags
+  [flags context]
+  (reduce
+   (fn [result fd]
+     (if (and (get (:contexts fd) context)
+              (not (zero? (bit-and flags (:flag fd)))))
+       (conj result (:name fd))
+       result))
+   #{}
+   flag-descriptors))
 
 (defrecord Constructor
   [name declaring-class parameter-types exceptions attributes])
@@ -64,7 +72,7 @@
    (classname (.getDeclaringClass constructor))
    (vec (map classname (.getParameterTypes constructor)))
    (vec (map classname (.getExceptionTypes constructor)))
-   (modifiers->set (.getModifiers constructor))))
+   (parse-flags (.getModifiers constructor) :method)))
 
 (defn declared-constructors
   "Return a set of the declared constructors of class as a Clojure map."
@@ -89,7 +97,7 @@
    (classname (.getDeclaringClass method))
    (vec (map classname (.getParameterTypes method)))
    (vec (map classname (.getExceptionTypes method)))
-   (modifiers->set (.getModifiers method))))
+   (parse-flags (.getModifiers method) :method)))
 
 (defn declared-methods
   "Return a set of the declared constructors of class as a Clojure map."
@@ -112,7 +120,7 @@
    (symbol (.getName field))
    (map classname (.getType field))
    (map classname (.getDeclaringClass field))
-   (modifiers->set (.getModifiers field))))
+   (parse-flags (.getModifiers field) :field)))
 
 (defn declared-fields
   "Return a set of the declared fields of class as a Clojure map."
@@ -127,7 +135,7 @@
   [classname]
   (let [cls (Class/forName (str classname))] ;; TODO use context version
     {:bases (set (bases cls))
-     :attributes (attributes cls)
+     :attributes (parse-flags (.getModifiers cls) :class)
      :fields (declared-fields cls)
      :methods (declared-methods cls)
      :constructors (declared-constructors cls)}))
@@ -162,7 +170,8 @@
      (reify
       ClassVisitor
       (visit [_ version access name signature superName interfaces]
-             (swap! result assoc :bases (set (map symbol interfaces))))
+             (swap! result merge {:bases (set (map symbol interfaces))
+                                  :attributes (parse-flags access :class)}))
       (visitSource [_ name debug])
       (visitInnerClass [_ name outerName innerName access])
       (visitField [_ access name desc signature value]
@@ -170,24 +179,24 @@
                          (Field. (symbol name)
                                  (descriptor->classname desc)
                                  classname
-                                 (modifiers->set access)))
+                                 (parse-flags access :field)))
                   nil)
       (visitMethod [_ access name desc signature exceptions]
                    (swap! result update-in [:methods] add-to-set
-                          (let [{:keys [parameter-types return-type]}
-                                (parse-method-descriptor desc)]
+                          (let [{:keys [parameter-types return-type]} (parse-method-descriptor desc)
+                                attributes (parse-flags access :method)]
                             (if (= name "<init>")
                               (Constructor. (symbol name)
                                             classname
                                             parameter-types
                                             nil
-                                            (modifiers->set access))
+                                            attributes)
                               (Method. (symbol name)
                                        return-type
                                        classname
                                        parameter-types
                                        nil
-                                       (modifiers->set access)))))
+                                       attributes))))
                    nil)
       (visitEnd [_])
       ) 0)
