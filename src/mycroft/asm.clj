@@ -1,4 +1,5 @@
 (ns mycroft.asm
+  (:require [clojure.set :as set])
   (:require [clojure.string :as str])
   (:import [clojure.asm ClassReader ClassVisitor Type]
            [java.lang.reflect Modifier]))
@@ -32,7 +33,9 @@
          [:ACC_PROTECTED 0x0004  :class :field :method]
          [:ACC_STATIC 0x0008  :field :method]
          [:ACC_FINAL 0x0010  :class :field :method]
-         [:ACC_SUPER 0x0020  :class]
+         ;; ACC_SUPER is ancient history and is unfindable (?) by
+         ;; reflection. skip it
+         #_[:ACC_SUPER 0x0020  :class]        
          [:ACC_SYNCHRONIZED 0x0020  :method]
          [:ACC_VOLATILE 0x0040  :field]
          [:ACC_BRIDGE 0x0040  :method]
@@ -188,23 +191,79 @@
                                  (parse-flags access :field)))
                   nil)
       (visitMethod [_ access name desc signature exceptions]
-                   (let [constructor? (= name "<init>")]
-                     (swap! result update-in [(if constructor? :constructors :methods)] add-to-set
-                            (let [{:keys [parameter-types return-type]} (parse-method-descriptor desc)
-                                  attributes (parse-flags access :method)]
-                              (if constructor?
-                                (Constructor. classname
-                                              classname
-                                              parameter-types
-                                              (vec (map internal-name->classname exceptions))
-                                              attributes)
-                                (Method. (symbol name)
-                                         return-type
-                                         classname
-                                         parameter-types
-                                         (vec (map internal-name->classname exceptions))
-                                         attributes)))))
+                   (when-not (= name "<clinit>")
+                     (let [constructor? (= name "<init>")]
+                       (swap! result update-in [(if constructor? :constructors :methods)] add-to-set
+                              (let [{:keys [parameter-types return-type]} (parse-method-descriptor desc)
+                                    attributes (parse-flags access :method)]
+                                (if constructor?
+                                  (Constructor. classname
+                                                classname
+                                                parameter-types
+                                                (vec (map internal-name->classname exceptions))
+                                                attributes)
+                                  (Method. (symbol name)
+                                           return-type
+                                           classname
+                                           parameter-types
+                                           (vec (map internal-name->classname exceptions))
+                                           attributes))))))
                    nil)
       (visitEnd [_])
       ) 0)
     @result))
+
+(defprotocol Diff
+  (diff [x y]))
+
+(extend-protocol Diff
+  java.lang.Object
+  (diff [x y]
+        (if (= x y)
+          [nil nil x]
+          [x y nil]))
+  
+  java.util.Set
+  (diff [x y]
+        [(not-empty (set/difference x y))
+         (not-empty (set/difference y x))
+         (not-empty (set/intersection x y))])
+  
+  java.util.Collection
+  (diff [x y]
+        (let [xc (count x)
+              yc (count y)
+              shared (min xc yc)
+              biggest (if (< xc yc) y x)]
+          (let [subdiffs (map
+                          (fn [k] (map #(when % [k %]) (diff (nth x k) (nth y k))))
+                          (range shared))] ;; slow, fix later
+            #_(pprint {:subdiffs subdiffs})
+            (reduce
+             (fn [diff1 diff2]
+                (map (fn [d1 [k v]] (if k (assoc d1 k v) d1)) diff1 diff2))
+             [(into (vec (repeat shared nil)) (when (> xc yc) (subvec x yc)))
+              (into (vec (repeat shared nil)) (when (> yc xc) (subvec y xc)))
+              (vec (repeat shared nil))] 
+             subdiffs))))
+  
+  java.util.Map
+  (diff [x y]
+        (let [xkeys (set (keys x))
+              ykeys (set (keys y))
+              [only-x only-y shared] (diff xkeys ykeys)]
+          #_(pprint {:xkeys xkeys
+                   :ykeys ykeys
+                   :only-x only-x
+                   :only-y only-y})
+          (let [subdiffs (map
+                          (fn [k] (map #(when % {k %}) (diff (get x k) (get y k))))
+                          shared)]
+            #_(pprint {:subdiffs subdiffs})
+            (reduce
+             (fn [diff1 diff2]
+               (map merge diff1 diff2))
+             [(not-empty (select-keys x only-x))
+              (not-empty (select-keys y only-y))
+              nil]
+             subdiffs)))))
