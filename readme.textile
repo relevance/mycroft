@@ -19,8 +19,6 @@ Embed Mycroft in your own project:
 ** run @(use 'mycroft.main)@
 ** launch mycroft on a port of your choice, e.g. @(run 8081)@
 
-View a live copy of Mycroft on the web at http://inspector.clojure.org.
-
 h2. Getting Started
 
 Once you have installed Mycroft per the instructions above, you can
