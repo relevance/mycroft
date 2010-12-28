@@ -1,6 +1,4 @@
-Mycroft is an generic inspector for the JVM, written in Clojure. You
-can learn more about Mycroft by looking at the running instance at 
-http://inspector.clojure.org.
+Mycroft is an generic inspector for the JVM, written in Clojure.
 
 h2. Installation
 
