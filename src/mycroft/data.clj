@@ -1,5 +1,6 @@
 (ns mycroft.data
   (:use clojure.pprint
+        [clojure.tools.logging :only (info)]
         mycroft.selector
         [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]
@@ -36,22 +37,30 @@
 
 (defmulti render-type (fn [type options] (tag type)))
 (defmethod render-type nil [this options]
+  (info "NIL")
   (render-type "<nil>" options))
 (defmethod render-type :Array [this options]
+  (info "Array")
   (render-type (seq this) options))
 (defmethod render-type java.util.Collection [this options]
+  (info "Collection")
   (render-collection this options))
 (defmethod render-type clojure.lang.ISeq [this options]
+  (info "ISeq")
   (render-collection this options))
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
+  (info "IPersistentCollection")
   (render-collection this options))
 (defmethod render-type clojure.lang.IRef [this options]
+  (info "IRef")
   (render-type @this (add-selector options :mycroft/deref)))
 (defmethod render-type clojure.lang.Var [this options]
+  (info "Var")
   (if (fn? (safe-deref this))
     (docs/render this options)
     (render-type (safe-deref this) (add-selector options :mycroft/deref))))
 (defmethod render-type :default [this options]
+  (info "Default")
   (render-string this options))
 
 (prefer-method render-type clojure.lang.IPersistentCollection java.util.Collection)
@@ -121,13 +130,17 @@
 
 (defn render-pagination
   [{:keys [start] :as options} count has-more?]
+  (info "Pagination Count:" count)
+  (info "Pagination Options:" options)
+  (info "Pagination Has More?:" has-more?)
+  (info "Pagination Start:" start)
   (when (or (not count)
             (> count items-per-page))
     [:div.buttons {:id "pagination"}
-     (if (> start 0)
-       [:a {:href (str "?" (breadcrumb/options->query-string (update-in options [:start] - items-per-page)))}
-        "prev"]
-       [:span.disabled-button "prev"])
+     ;; (if (> start 0)
+     ;;   [:a {:href (str "?" (breadcrumb/options->query-string (update-in options [:start] - items-per-page)))}
+     ;;    "prev"]
+     ;;   [:span.disabled-button "prev"])
      (when count
        [:span
         (str "Items " start "-" (min count (+ start items-per-page)) " of " count)])
@@ -169,8 +182,9 @@
         content (take items-per-page content)]
     (if (composite? content)
       [:div
-       (render-table content options)
-       (render-pagination options count has-more?)]
+       (render-table content options)]
+       ;; Currently broken because of missing start
+       ;; (render-pagination options count has-more?)]
       (render-type content options))))
 
 

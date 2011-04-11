@@ -21,17 +21,16 @@
                 "/javascripts/shBrushClojure.js")]
    [:body {:id "browser"}
     [:h2 {:class "logo"} [:a {:href "/" :class "home"} "Home"] [:a {:href "/index.html"} "Mycroft, a Clojure inspector"]]
-    [:div {:id "content"}
-     body]
-    [:div {:id "footer"}
-     "Clojure Mini-Browser"]]))
+    [:div {:id "content"} body]
+    [:div {:id "footer"} "Clojure Mini-Browser"]]))
 
 (defn namespaces []
-  (html
-   (minib-layout "Namespaces" (namespace/browser))))
+  (minib-layout "Namespaces" (namespace/browser)))
 
 (defn classes [params query-params]
-  (let [classname (get params "*")
+  (info "params" params)
+  (info "query-params" query-params)
+  (let [classname (:* params)
         cls (Class/forName classname)]
     (minib-layout classname
                   (class/render cls query-params cls))))

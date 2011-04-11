@@ -1,5 +1,6 @@
 (ns mycroft.docs
-  (:use [clojure.pprint :only (pprint)])
+  (:use [clojure.pprint :only (pprint)]
+        [clojure.tools.logging :only (info)])
   (:require [clojure.string :as str]
             [clojure.java.javadoc :as javadoc]
             clojure.repl))
@@ -47,6 +48,8 @@
 (defn render
   "Render docstring and source for a var"
   [var options]
+  (info "Doc Var:" var)
+  (info "Doc Options:" options)
   [:div
    [:h4 "Docstring"]
    [:pre [:code (doc-string var)]]
