@@ -1,2 +1,4 @@
 lib/*
 pom.xml
+*.jar
+public
