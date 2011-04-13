@@ -1,5 +1,5 @@
 (ns mycroft.jmx
-  (:require [clojure.contrib.jmx :as jmx]))
+  (:require [clojure.java.jmx :as jmx]))
 
 (defn beans
   "Returns a sorted map of bean-name -> bean for all JMX beans

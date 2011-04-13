@@ -1,5 +1,5 @@
 (ns mycroft.daemon
-  (:use [clojure.contrib.java-utils :only (file)])
+  (:use [clojure.java.io :only (file)])
   (:require mycroft.main))
 
 (defn daemonize
