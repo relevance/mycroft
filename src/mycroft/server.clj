@@ -16,8 +16,9 @@
 
 (defroutes base-routes
   (GET "/vars" [] (layout/namespaces))
-  (GET "/vars/*" {:keys [params query-params]} (layout/vars params query-params))
-  (GET "/classes/*" {:keys [params query-params]} (layout/classes params query-params))
+  (GET "/foo" request (prn request))
+  (GET "/vars/*" {:keys [params]} (layout/vars params))
+  (GET "/classes/*" {:keys [params]} (layout/classes params))
   (route/files "/")
   (route/not-found "not found"))
 
@@ -35,10 +36,10 @@
 (defrecord Instance [port]
   Inspector
   (launch [_]
-    (run-jetty application {:port port
-                            :join? false}))
+    (run-jetty (var application) {:port port
+                                  :join? false}))
   (inspect [_ obj options]
-    (let [query (breadcrumb/options->query-string options)]
+    (let [query (breadcrumb/params->query-string options)]
       (if (class? obj)
         (browse-url (str "http://localhost:" port
                          "/classes/" (.getName obj) "?"

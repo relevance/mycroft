@@ -4,14 +4,14 @@
         [hiccup.core :only (escape-html)])
   (:require [mycroft.docs :as docs]))
 
-(defn options->query-string
-  "Generate query string for the options provided. Options include
+(defn params->query-string
+  "Generate query string for the params provided. Params include
 
    :selectors                  vector of selectors for select-in
    :start                      first item to show (for pagination)
    :headers                    explicitly select table headers."
-  [options]
-  (encode-params options))
+  [params]
+  (encode-params (select-keys params [:selectors :start :headers])))
 
 (defprotocol Resource
   (url-for [o])
@@ -90,13 +90,13 @@
                 (map (fn [partial-selectors]
                        [:span
                         " &raquo; "
-                        [:a {:href (str "?" (options->query-string {:selectors partial-selectors}))}
+                        [:a {:href (str "?" (params->query-string {:selectors partial-selectors}))}
                          (breadcrumb-text (last partial-selectors)) ]])))
            [:span " &raquo; " (breadcrumb-text (last selectors))]]))]
      [:div#options
       (when (meta selection)
         [:span
-         [:a {:href (str "?" (options->query-string (add-selector options ::meta)))} "metadata"]])
+         [:a {:href (str "?" (params->query-string (add-selector options :mycroft/meta)))} "metadata"]])
       (when-let [class (and selection (.getClass selection))]
         [:span (link-to class)])
       (when-let [doc-url (docs/doc-url selection)]

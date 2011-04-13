@@ -27,21 +27,33 @@
 (defn namespaces []
   (minib-layout "Namespaces" (namespace/browser)))
 
-(defn classes [params query-params]
-  (info "params" params)
-  (info "query-params" query-params)
+(defn read-param-string
+  "Use Clojure reader to read a param strings, or return
+   default is param string empty/nil."
+  ([s] (read-param-string s nil))
+  ([s default]
+     (if (seq s)
+       (read-string s)
+       default)))
+
+(defn normalize-params
+  [params]
+  (-> params
+      (update-in [:selectors] read-param-string)
+      (update-in [:headers] read-param-string)
+      (update-in [:start] read-param-string 0)))
+
+(defn classes [params]
   (let [classname (:* params)
         cls (Class/forName classname)]
     (minib-layout classname
-                  (class/render cls query-params cls))))
+                  (class/render cls (normalize-params params) cls))))
 
-(defn vars [params query-params]
-  (info "params" params)
-  (info "query-params" query-params)
+(defn vars [params]
   (let [qname (:* params)
         [ns var] (split qname #"/")]
     (namespace/safe-load-ns ns)
     (minib-layout qname
                   (if var
-                    (data/render (find-var (symbol qname)) query-params)
+                    (data/render (find-var (symbol qname)) (normalize-params params))
                     (namespace/var-browser ns)))))
