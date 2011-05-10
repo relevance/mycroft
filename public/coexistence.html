@@ -1,0 +1,38 @@
+<html>
+<head>
+  <title>Coexistence</title>
+  
+  <link href="/stylesheets/shCore.css" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/shThemeDefault.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="/stylesheets/mobile.css" media="handheld"/>
+  <link rel="stylesheet" type="text/css"  href="/stylesheets/mobile.css" media="screen" />
+  <meta name="viewport" content="user-scalable=no, width=device-width" />
+</head>
+<body>
+
+  <h2 class="logo"><a href="/" class="home">Home</a><a href="/">Coexistence</a></h2>
+
+<p>Programming with <a href="/values.html">values</a>
+  and <a href="/references.html"> references</a> is liberating, but most of the JVM
+  world doesn't work that way yet. In Java, and most other JVM
+  languages, there
+  is <a href="http://stackoverflow.com/questions/203475/how-do-i-identify-immutable-objects-in-java">no
+  way to tell</a> if an object is a value or a reference. And in fact,
+  most JVM objects are neither! As a result, reading values from an
+  arbitrary Java object requires coordination through a different
+  specific API for every library.</p>
+
+<p>The best thing you can do in this situation is get out of APIs as
+  quickly as possible, converting specific objects into generic data as
+  soon as you possibly can.</p>
+
+<p>Some examples:</p>
+<ul>
+<li><a href="/vars/mycroft.examples.xml/xml-example">XML data</a></li>
+<li><a href="/vars/mycroft.examples/jmx-beans">JMX beans</a></li>
+</ul>
+
+</body>
+</html>
+
+

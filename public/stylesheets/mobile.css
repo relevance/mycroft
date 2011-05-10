@@ -1,0 +1,171 @@
+html {-webkit-text-size-adjust:none}
+body {
+  background-color: #ddd;
+  color: #222;
+  font-family: Helvetica; 
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+#header {
+  background:#ccc;
+  border-bottom: 1px solid #666;
+}
+h2.logo {
+  background:#ccc;
+  border-bottom: 1px solid #666;
+  margin: 0;
+  padding: 0 0 0 10px;
+  text-align: left;
+}
+#content a:link,#content a:visited, #content a:active {color: #3D5A96; text-decoration: none;}
+a:visited { color: #222;}
+h2.logo a:link,
+h2.logo a:visited {
+  background: transparent url(clojure_logo_sm.png) 0 6px no-repeat;
+  color: #222;
+  display: inline-block;
+  margin: 0 auto;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 10px 0 10px 35px;
+  text-align: center;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+  margin: 10px;
+  padding: 0;
+}
+ul li a {
+  background-color: #FFFFFF;
+  border: 1px solid #999999;
+  color: #222222;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: -1px;
+  padding: 12px 10px;
+  text-decoration: none;
+}
+
+#content {
+  margin: 10px;
+}
+
+p, h4 {
+  padding: 0 10px;
+}
+#footer {
+    display: none;
+}
+
+ul li:first-child a {
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-top-right-radius: 8px;
+}
+ul li:last-child a {
+  -webkit-border-bottom-left-radius: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+}
+
+pre {
+  border: 1px solid #ccc;
+  background-color: #F8F8F8;
+  padding: .6em;
+  margin: .6em;
+  word-wrap: break-word;
+}
+
+pre code{
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+#breadcrumb {
+  margin: 10px 10px 0px 10px;
+  background: #ebebeb;
+  padding: 5px 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#breadcrumb a:link,
+#breadcrumb a:visited {
+  color: #3D5A96;
+}
+
+#options {
+  text-align: center;
+  margin: 0px 15px 10px 15px;
+  background: #ebebeb;
+  padding: 5px 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#options a:link,
+#options a:visited {
+  color: #3D5A96;
+}
+
+#options span {
+  margin: 0px 10px;
+}
+
+.buttons {
+  padding: 5px;
+}
+
+.buttons a:link,
+.buttons a:visited {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 5px 7px;
+  text-decoration: none;
+  color: #222;
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.buttons .disabled-button {
+  background: #ddd;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 5px 7px;
+  text-decoration: none;
+  color: #888;
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.buttons a:active {
+  background-color: #666;
+  border-color: #333;
+  color: #fff;
+}
+
+h2.logo a.home {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 5px;
+}
+
+table.data               {font-family: Lucida Grande, Arial; font-size: 8pt; border-collapse: collapse; margin: 10px;}
+table.data tr td         {vertical-align: top; padding-left: 3px; padding-top: 3px;}
+table.data td            {border: solid 1px gray; padding: 5px;}
+table.data tr {background-color: #ebebeb; }
+table.data tr:nth-child(2n)        {background-color: #fff; }
+
+#pagination {
+  margin: 0px 10px;
+}
