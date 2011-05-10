@@ -40,10 +40,3 @@
   (reduce select
    item
    selectors))
-
-#_(defn selections-in
-  "Like select-in, but returns vector of the
-   intermediate steps."
-  [item selectors]
-  (vec (reductions select item selectors)))
-
