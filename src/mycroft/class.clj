@@ -2,14 +2,14 @@
   (:use [clojure.tools.logging :only (info)]
         [mycroft.data :only (render-type)]
         mycroft.selector)
-  (:require [mycroft.reflect :as reflect]
+  (:require [clojure.reflect :as reflect]
             [mycroft.breadcrumb :as breadcrumb]))
 
 (defn render
   [cls n-params selection]
   (info "Class" cls)
   (info "Selection" selection)
-  (let [obj (reflect/members cls)
+  (let [obj (:members (reflect/reflect cls))
         selectors (:selectors n-params)
         selection (select-in obj selectors)]
     [:div
@@ -19,4 +19,4 @@
                         (if selectors
                           n-params
                           (assoc n-params :headers
-                                 [:name :type :parameter-types :return-type :modifiers :declaring-class])))]]))
+                                 [:name :type :parameter-types :return-type :modifiers :declaring-class :exception-types :flags])))]]))
