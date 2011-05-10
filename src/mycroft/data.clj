@@ -46,8 +46,8 @@
   (render-collection this options))
 (defmethod render-type clojure.lang.IPersistentCollection [this options]
   (render-collection this options))
-(defmethod render-type clojure.lang.IRef [this options]
-  (render-type @this (add-selector options :mycroft/deref)))
+(defmethod render-type clojure.lang.IDeref [this options]
+  (render-type (deref this 0 :pending) (add-selector options :mycroft/deref)))
 (defmethod render-type clojure.lang.Var [this options]
   (if (fn? (safe-deref this))
     (docs/render this options)
