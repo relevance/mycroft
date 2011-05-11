@@ -9,14 +9,12 @@
   [cls n-params selection]
   (info "Class" cls)
   (info "Selection" selection)
-  (let [obj (:members (reflect/reflect cls))
+  (let [obj (reflect/reflect cls)
         selectors (:selectors n-params)
-        selection (select-in obj selectors)]
+        selection (select-in obj selectors)
+        n-params (if (= (last selectors) :members)
+                   (assoc n-params :headers [:name :type :parameter-types :return-type :modifiers :declaring-class :exception-types :flags])
+                   n-params)]
     [:div
      [:div {:id "breadcrumb"} (breadcrumb/render cls n-params selection)]
-     [:div (render-type {:superclasses (supers cls)} {})]
-     [:div (render-type selection
-                        (if selectors
-                          n-params
-                          (assoc n-params :headers
-                                 [:name :type :parameter-types :return-type :modifiers :declaring-class :exception-types :flags])))]]))
+     [:div (render-type selection n-params)]]))
