@@ -1,8 +1,11 @@
 (ns mycroft.breadcrumb
   (:use mycroft.selector
-        [hiccup.page-helpers :only (encode-params)]
-        [hiccup.core :only (escape-html)])
+        [hiccup.util :only [escape-html
+                            url-encode]])
   (:require [mycroft.docs :as docs]))
+
+(defn encode-params [params]
+  (url-encode params))
 
 (defn params->query-string
   "Generate query string for the params provided. Params include

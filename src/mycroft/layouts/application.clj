@@ -2,7 +2,8 @@
   (:use [clojure.string :only (split)]
         [clojure.tools.logging :only (info)]
         [hiccup.core :only (html)]
-        [hiccup.page-helpers :only (include-css include-js)])
+        [hiccup.page :only [include-css
+                            include-js]])
   (:require [mycroft.namespace :as namespace]
             [mycroft.class :as class]
             [mycroft.data :as data]))
