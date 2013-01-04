@@ -1,8 +1,8 @@
 (ns mycroft.data
-  (:use clojure.pprint
+  (:use [clojure.pprint]
         [clojure.tools.logging :only (info)]
-        mycroft.selector
-        [hiccup.core :only (escape-html)])
+        [mycroft.selector]
+        [hiccup.util :only [escape-html]])
   (:require [mycroft.docs :as docs]
             [mycroft.breadcrumb :as breadcrumb]))
 
