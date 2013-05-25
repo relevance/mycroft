@@ -5,17 +5,16 @@ h2. Installation
 Run Mycroft as a standalone project:
 
 * clone the git repos at http://github.com/relevance/mycroft
-* run @lein deps@ to get dependent libraries
-* run @script/repl@ to launch the web server
+* run @lein run 8080@ to launch the web server and repl
+* Warnings and web log on console can be ignored 
 
 Embed Mycroft in your own project:
 
-* in project.clj, add @[mycroft/mycroft "0.0.2"]@ to your
+* in project.clj, add @[mycroft/mycroft "0.0.3"]@ to your
   @:dev-dependencies@
-* run @lein deps@ to get libs
 * from the repl:
-** run @(use 'mycroft.main)@
-** launch mycroft on a port of your choice, e.g. @(run 8081)@
+** run @(require '[mycroft.main :as mycroft])@
+** launch mycroft on a port of your choice, e.g. @(mycroft/-main "8081")@
 
 h2. Getting Started
 

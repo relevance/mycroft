@@ -1,16 +1,21 @@
 (ns mycroft.main
-  (:require mycroft.server))
+  (:require
+   mycroft.server
+   [clojure.edn :as edn]))
 
 (def ^{:doc "Instance of the currently running inspector."}
   inspector nil)
 
-(defn run
+(defn -main
   "Run the inspector web server on the specified port. There
    is currently no facility for in-process shutdown and
    restart (though this could easily be added)."
   [port]
-  (alter-var-root #'inspector (constantly (mycroft.server.Instance. port)))
-  (.launch inspector))
+  (let [port (when (string? port) (edn/read-string port))]
+    (alter-var-root #'inspector (constantly (mycroft.server.Instance. port)))
+    (.launch inspector)
+    (refer 'mycroft.main :only '(inspect))
+    (clojure.main/repl)))
 
 (defmacro inspect
   "Primary entry point for Clojure clients. You should be able to
